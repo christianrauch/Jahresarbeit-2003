@@ -5,11 +5,11 @@ http://www.sdlgames.de.tf
 
 Dieses Programm ist freie Software. Sie können es unter den Bedingungen der GNU General Public License,
 wie von der Free Software Foundation veröffentlicht, weitergeben und/oder modifizieren, entweder gemäß
-Version 2 der Lizenz oder (nach Ihrer Option) jeder späteren Version. 
+Version 2 der Lizenz oder (nach Ihrer Option) jeder späteren Version.
 
 Die Veröffentlichung dieses Programms erfolgt in der Hoffnung, daß es Ihnen von Nutzen sein wird, aber
 OHNE IRGENDEINE GARANTIE, sogar ohne die implizite Garantie der MARKTREIFE oder der VERWENDBARKEIT FÜR
-EINEN BESTIMMTEN ZWECK. Details finden Sie in der GNU General Public License. 
+EINEN BESTIMMTEN ZWECK. Details finden Sie in der GNU General Public License.
 
 Sie sollten eine Kopie der GNU General Public License zusammen mit diesem Programm erhalten haben.
 Falls nicht, schreiben Sie an die Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
@@ -36,7 +36,7 @@ typedef struct
 
 
 void program();
-int menu(SDL_Surface *ausgabe_bild, int field);
+void menu(SDL_Surface *ausgabe_bild, int *field);
 void hs_menue(SDL_Surface *bild);
 void hardware_info(SDL_Surface *bild);
 void free_game(SDL_Surface *bildschirm);
@@ -74,39 +74,36 @@ void program()
 	SDL_Surface *bildschirm;
 	int field=2;
 
-	bildschirm=SDL_SetVideoMode(800,600,0,SDL_HWSURFACE);	
-	
+	bildschirm=SDL_SetVideoMode(800,600,0,SDL_HWSURFACE);
+
 	int running=1;
 	while(running)
 	{
-		switch(menu(bildschirm, field))
+		menu(bildschirm, &field);
+		switch(field)
 		{
 		case 2:
 			free_game(bildschirm);
-			field=2;
 			break;
 		case 3:
 			hs_menue(bildschirm);
-			field=3;
 			break;
 		case 4:
 			hardware_info(bildschirm);
-			field=4;
 			break;
 		case 5:
 			hilfe_menue();
-			field=5;
 			break;
 		case 6:
 			running=0;
 			break;
 		}
 	}
-	
+
 	SDL_FreeSurface(bildschirm);
 }
 
-int menu(SDL_Surface *ausgabe_bild, int field)
+void menu(SDL_Surface *ausgabe_bild, int *field)
 {
 	SDL_ShowCursor(SDL_DISABLE);
 
@@ -130,7 +127,7 @@ int menu(SDL_Surface *ausgabe_bild, int field)
 	menu_pos.y=150;
 	menu_pos.w=300;
 	menu_pos.h=350;
-	
+
 	area.x=0;
 	area.w=300;
 	area.h=50;
@@ -142,11 +139,12 @@ int menu(SDL_Surface *ausgabe_bild, int field)
 
 	ausgabe_area.x=menu_pos.x;
 
-	while(menu_event.key.keysym.sym!=SDLK_RETURN)
+	int running=1;
+	while(running)
 	{
 		for(int i=2;i<7;i++)
 		{
-			if(field==i)
+			if(*field==i)
 			{
 				area.y=i*50;
 				ausgabe_area.y=menu_pos.y+area.y;
@@ -161,33 +159,29 @@ int menu(SDL_Surface *ausgabe_bild, int field)
 		SDL_BlitSurface(menu_text,0,ausgabe_bild,0);
 		SDL_UpdateRect(ausgabe_bild,0,0,0,0);
 
-		while(SDL_PollEvent(&menu_event))
+		SDL_WaitEvent(&menu_event);
+
+		if(menu_event.type==SDL_KEYDOWN)
 		{
-			switch(menu_event.type)
+			switch(menu_event.key.keysym.sym)
 			{
-			case SDL_KEYDOWN:
-				switch(menu_event.key.keysym.sym)
-				{
-				case SDLK_UP:
-					field--;
-					break;
-				case SDLK_DOWN:
-					field++;
-					break;
-				case SDLK_RETURN:
-					return field;
-					break;
-				case SDLK_i:					
-					break;
-				case SDLK_ESCAPE:
-					exit(0);
-				}
+			case SDLK_UP:
+				(*field)--;
+				break;
+			case SDLK_DOWN:
+				(*field)++;
+				break;
+			case SDLK_RETURN:
+				running=0;
+				break;
+			case SDLK_ESCAPE:
+				exit(0);
 			}
 
-			switch(field)
+			switch(*field)
 			{
-			case 1: field=6; break;			
-			case 7: field=2; break;
+			case 1: *field=6; break;
+			case 7: *field=2; break;
 			}
 		}
 	}
@@ -200,7 +194,7 @@ int menu(SDL_Surface *ausgabe_bild, int field)
 
 void hs_menue(SDL_Surface *bild)
 {
-	SDL_Surface *highscore_back;	
+	SDL_Surface *highscore_back;
 	highscore_back=SDL_DisplayFormat(IMG_Load("grafik/info_back.jpg"));
 	TTF_Font *copperplate2=TTF_OpenFont("fonts/copperplate.ttf",20);
 	TTF_Font *bloody=TTF_OpenFont("fonts/bloodfea.ttf",50);
@@ -261,22 +255,19 @@ void hs_menue(SDL_Surface *bild)
 		SDL_BlitSurface(TTF_RenderUTF8_Solid(bradley,zeit[j],black),0,bild,&zeit_pos);
 		zeit_pos.y+=z_abst;
 	}
-	
+
 	SDL_BlitSurface(TTF_RenderUTF8_Solid(copperplate2,"<bel. Taste druecken um zurueck zu kehren>",black),0,bild,&ende_pos);
 	SDL_UpdateRect(bild,0,0,0,0);
 
 	SDL_Event highscore_event;
 
-	while(highscore_event.type!=SDL_KEYDOWN)
-	{
-		SDL_PollEvent(&highscore_event);
-	}
+	while(SDL_WaitEvent(&highscore_event) && highscore_event.type!=SDL_KEYDOWN);
 
 	TTF_CloseFont(copperplate2);
 	TTF_CloseFont(bloody);
 	TTF_CloseFont(bradley);
 	TTF_CloseFont(comic);
-	
+
 	SDL_FreeSurface(bild);
 	SDL_FreeSurface(highscore_back);
 }
@@ -337,17 +328,14 @@ void hardware_info(SDL_Surface *bild)
 	}
 	SDL_BlitSurface(TTF_RenderUTF8_Solid(arial,"<beliebige Taste>",black),0,bild,&ende_pos);
 	SDL_UpdateRect(bild,0,0,0,0);
-	
+
 	SDL_Event about_event;
 
-	while(about_event.type!=SDL_KEYDOWN)
-	{
-		SDL_PollEvent(&about_event);
-	}
+	while(SDL_WaitEvent(&about_event) && about_event.type!=SDL_KEYDOWN);
 
 	TTF_CloseFont(arial_bold);
 	TTF_CloseFont(arial);
-	
+
 	SDL_FreeSurface(about);
 	SDL_FreeSurface(bild);
 }
@@ -379,9 +367,9 @@ void game(setting game_s)
 	int matrix[9][9];
 	long time1, time2, time_dif, time_gr2=0, time_gre;
 	int gr_anzahl=0, akt_anzahl=0;
-	int klicks_ges=0, klicks_fl=0, klicks_pf=0;	
-	
-	
+	int klicks_ges=0, klicks_fl=0, klicks_pf=0;
+
+
 	SDL_Rect matrix_pos;
 
 	SDL_Event event_m;
@@ -393,77 +381,77 @@ void game(setting game_s)
 	matrix_pos.y=75;
 	matrix_pos.w=450;
 	matrix_pos.h=450;
-	
+
 	random_matrix(matrix);
 
 	SDL_BlitSurface(hintergrund,0,bildschirm,0);
 
 	draw_arrows(matrix_pos);
-	
+
 	time(&time1);
-	
+
 	while(!whether_gameend(matrix))
 	{
 		draw_matrix(matrix,matrix_pos,game_s.piece_set);
 		SDL_PollEvent(&event_m);
 		switch(event_m.type)
 		{
-		case SDL_KEYDOWN: 			
+		case SDL_KEYDOWN:
 			if(event_m.key.keysym.sym==SDLK_ESCAPE)
-				return;			
-			break;		
+				return;
+			break;
 		case SDL_MOUSEBUTTONUP:
-			klicks_ges++;			
-			SDL_BlitSurface(hintergrund,&matrix_pos,bildschirm,&matrix_pos);			
+			klicks_ges++;
+			SDL_BlitSurface(hintergrund,&matrix_pos,bildschirm,&matrix_pos);
 
 			if(event_m.button.x>=matrix_pos.x && event_m.button.x<=matrix_pos.w+matrix_pos.x
 				&& event_m.button.y>=matrix_pos.y && event_m.button.y<=matrix_pos.h+matrix_pos.y)
-			{			
+			{
 				klicks_fl++;
 				akt_anzahl=look_for_match(matrix, (event_m.button.x-matrix_pos.x)/50, (event_m.button.y-matrix_pos.y)/50);
 				if(akt_anzahl>gr_anzahl)
 				{
-					gr_anzahl=akt_anzahl;					
+					gr_anzahl=akt_anzahl;
 					time(&time_gr2);
 				}
 			}
-			
-			
+
+
 			if(event_m.button.x>matrix_pos.x && event_m.button.x<matrix_pos.x+matrix_pos.w
 				&& event_m.button.y>matrix_pos.y-50 && event_m.button.y<matrix_pos.y)
-			{			
+			{
 				klicks_pf++;
 				change_matrix(matrix, "oben", (event_m.button.x-matrix_pos.x)/50);
-			}			
+			}
 			if(event_m.button.x>matrix_pos.w+matrix_pos.x && event_m.button.x<matrix_pos.w+matrix_pos.x+50
 				&& event_m.button.y>matrix_pos.y && event_m.button.y<matrix_pos.h+matrix_pos.y)
-			{			
+			{
 				klicks_pf++;
 				change_matrix(matrix, "rechts", (event_m.button.y-matrix_pos.y)/50);
 			}
 			if(event_m.button.x>matrix_pos.x && event_m.button.x<matrix_pos.w+matrix_pos.x
 				&& event_m.button.y>matrix_pos.y+matrix_pos.h && event_m.button.y<matrix_pos.y+matrix_pos.h+50)
-			{			
+			{
 				klicks_pf++;
 				change_matrix(matrix, "unten", (event_m.button.x-matrix_pos.x)/50);
 			}
 			if(event_m.button.x>matrix_pos.x-50 && event_m.button.x<matrix_pos.x
 				&& event_m.button.y>matrix_pos.y && event_m.button.y<matrix_pos.h+matrix_pos.y)
-			{			
+			{
 				klicks_pf++;
 				change_matrix(matrix, "links", (event_m.button.y-matrix_pos.y)/50);
 			}
-			
+
 			break;
 		}
 	}
-	
+
 	time(&time2);
 
 	time_dif=(time2-time1)*1000;
-	time_gre=(time_gr2-time1)*1000;	
+	time_gre=(time_gr2-time1)*1000;
 
-	stat_menue(time_dif,time_gre,klicks_ges,klicks_fl,klicks_pf,gr_anzahl);	
+	stat_menue(time_dif,time_gre,klicks_ges,klicks_fl,klicks_pf,gr_anzahl);
 
 	SDL_FreeSurface(bildschirm);
 	SDL_FreeSurface(hintergrund);
@@ -527,7 +515,7 @@ void draw_arrows(SDL_Rect matrix_pos)
 	bildschirm=SDL_GetVideoSurface();
 	direction_arrows=SDL_DisplayFormat(IMG_Load("grafik/pfeile.gif"));
 	SDL_SetColorKey(direction_arrows,SDL_RLEACCEL | SDL_SRCCOLORKEY,SDL_MapRGB(direction_arrows->format,255,255,255));
-	
+
 	pfeil_ko.x=0;
 	pfeil_ko.y=0;
 	pfeil_ko.w=50;
@@ -587,7 +575,7 @@ void draw_arrows(SDL_Rect matrix_pos)
 void change_matrix(int matrix[9][9], char *arrows, int nr)
 {
 	int temp;
-	
+
 	if(arrows=="oben")
 	{
 		temp=matrix[nr][0];
@@ -641,7 +629,7 @@ int look_for_match(int m[9][9], int x, int y)
 	farbe=m[x][y];
 	pos_x[0]=x;
 	pos_y[0]=y;
-	
+
 	do
 	{
 		if(m[pos_x[i]][pos_y[i]-1]==farbe)
@@ -656,7 +644,7 @@ int look_for_match(int m[9][9], int x, int y)
 				continue;
 			}
 		}
-		
+
 		if(m[pos_x[i]+1][pos_y[i]]==farbe)
 		{
 			m[pos_x[i]+1][pos_y[i]]=0;
@@ -666,7 +654,7 @@ int look_for_match(int m[9][9], int x, int y)
 			i++;
 			continue;
 		}
-		
+
 		if(m[pos_x[i]][pos_y[i]+1]==farbe)
 		{
 			if(pos_y[i]+1<=8)
@@ -679,27 +667,27 @@ int look_for_match(int m[9][9], int x, int y)
 				continue;
 			}
 		}
-		
+
 		if(m[pos_x[i]-1][pos_y[i]]==farbe)
 		{
 			m[pos_x[i]-1][pos_y[i]]=0;
 			anzahl++;
 			pos_x[i+1]=pos_x[i]-1;
-			pos_y[i+1]=pos_y[i];		
+			pos_y[i+1]=pos_y[i];
 			i++;
 			continue;
 		}
-		
+
 		if(i!=0)
 			i--;
-			
+
 	}while(i!=0);
 
-		return anzahl;	
+		return anzahl;
 }
 
 int whether_gameend(int m[9][9])
-{	
+{
 	int farbe[6]={0,0,0,0,0,0};
 
 	for(int i=0;i<9;i++)
@@ -707,13 +695,13 @@ int whether_gameend(int m[9][9])
 		for(int j=0;j<9;j++)
 		{
 			if(m[i][j]!=0)
-			{				
+			{
 				farbe[m[i][j]]++;
 			}
 			else
 				continue;
 		}
-	}	
+	}
 
 	if(farbe[1]<2 && farbe[2]<2 && farbe[3]<2 && farbe[4]<2 && farbe[5]<2)
 	{
@@ -747,7 +735,7 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 	SDL_Color black={0,0,0};
 
 	SDL_Event stat_event;
-	
+
 	int p=0;
 	int pos=0;
 
@@ -764,7 +752,7 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 	hs hs_in;
 
 	SDL_ShowCursor(0);
-	
+
 	p=(max_anz*1000000*100)/(time2*k_ges);
 
 	sprintf(t_zeit_min, "%d", (int)time/60000);
@@ -791,22 +779,22 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 
 	sprintf(t_rest[0], "%d", max_anz);
 	gcvt(k_ges/(time/1000),4,t_rest[1]);
-	
+
 	sprintf(t_rest[2], "%d", time2/1000);
 	strcat(t_rest[2]," Sek.");
 
 	strcpy(t_stat2[0],"Gr. Fläche:");
 	strcpy(t_stat2[1],"Klicks pro Sekunde:");
 	strcpy(t_stat2[2],"Zeit für gr. Fläche:");
-	
+
 	SDL_BlitSurface(stat_back,0,bild,0);
 
-	SDL_BlitSurface(TTF_RenderUTF8_Solid(copperplate,"SPIELENDE",black),0,bild,&headline);	
-	
+	SDL_BlitSurface(TTF_RenderUTF8_Solid(copperplate,"SPIELENDE",black),0,bild,&headline);
+
 	hs_in.punkte=p;
 	hs_in.gr_fla=max_anz;
 	hs_in.zeit=time2/1000;
-	
+
 	pos=pos_hs(hs_in);
 
 	if(pos!=0)
@@ -817,7 +805,7 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 		strcpy(hs_in.name,t_name);
 
 		in_hs(hs_in);
-		
+
 		strcpy(t_pos,"Sie haben den ");
 		sprintf(t_pos_int, "%d", pos);
 		strcat(t_pos,t_pos_int);
@@ -829,10 +817,10 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 	}
 
 	SDL_BlitSurface(TTF_RenderUTF8_Solid(copperplate2,t_pos,black),0,bild,&pos_pos);
-	
+
 	SDL_BlitSurface(TTF_RenderUTF8_Solid(copperplate2,t_zeit,black),0,bild,&time_pos);
 	SDL_BlitSurface(TTF_RenderUTF8_Solid(copperplate2,t_punkte,black),0,bild,&punkte_pos);
-	
+
 	for(int i=0;i<4;i++)
 	{
 		SDL_BlitSurface(TTF_RenderUTF8_Solid(copperplate2,t_stat1[i],black),0,bild,&stat1_pos);
@@ -853,10 +841,7 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 	SDL_BlitSurface(TTF_RenderUTF8_Solid(copperplate2,"<bel. Taste druecken um zurueck zu kehren>",black),0,bild,&ende_pos);
 	SDL_UpdateRect(bild,0,0,0,0);
 
-	do
-	{
-		SDL_PollEvent(&stat_event);
-	}while(stat_event.type!=SDL_KEYDOWN);
+	while(SDL_WaitEvent(&stat_event) && stat_event.type!=SDL_KEYDOWN);
 
 	TTF_CloseFont(copperplate);
 	TTF_CloseFont(copperplate2);
@@ -887,16 +872,16 @@ char *input_name(SDL_Surface *prev_bild)
 	{
 		if(SDL_PollEvent(&input_event))
 		{
-			SDL_BlitSurface(prev_bild,0,bild,0);			
-			
-			SDL_BlitSurface(TTF_RenderUTF8_Solid(copperplate2,t_name,black),0,bild,&name_pos);		
-		
+			SDL_BlitSurface(prev_bild,0,bild,0);
+
+			SDL_BlitSurface(TTF_RenderUTF8_Solid(copperplate2,t_name,black),0,bild,&name_pos);
+
 			SDL_UpdateRect(bild,0,0,0,0);
 
 			if(input_event.key.type==SDL_KEYDOWN)
-				taste=input_event.key.keysym.sym;			
+				taste=input_event.key.keysym.sym;
 		}
-		
+
 		if((taste>=SDLK_0 && taste<=SDLK_9) || (taste>=SDLK_a && taste<=SDLK_z)) // || taste==SDLK_SPACE)
 		{
 			if(taste!=32)
@@ -956,7 +941,7 @@ void write_hs(hs *hs_out)
 void read_hs(hs *hs_in)
 {
 	FILE *fp = fopen("highscore.txt", "r");
-	
+
 	for(int i=0;i<10;i++)
 	{
 		fscanf(fp, "%s", hs_in->name);
@@ -1006,10 +991,7 @@ void hilfe_menue()
 	SDL_BlitSurface(TTF_RenderUTF8_Solid(courier,"<belibige Taste drücken um zurück zu kehren>",black),0,bild,&ende_pos);
 	SDL_UpdateRect(bild,0,0,0,0);
 
-	do
-	{
-		SDL_PollEvent(&hilfe_event);
-	}while(hilfe_event.type!=SDL_KEYDOWN);
+	while(SDL_WaitEvent(&hilfe_event) && hilfe_event.type!=SDL_KEYDOWN);
 
 	TTF_CloseFont(courier);
 
@@ -1021,9 +1003,9 @@ void in_hs(hs hs_input)
 {
 	hs akt_hs[10];
 	hs new_hs[10];
-	
+
 	read_hs(akt_hs);
-	
+
 	if(hs_input.punkte>akt_hs[9].punkte)
 	{
 		for(int i=0;i<10;i++)
@@ -1067,6 +1049,6 @@ int pos_hs(hs hs_input)
 	}
 	else
 		ret_n=0;
-	
+
 	return ret_n;
 }
