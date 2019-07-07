@@ -20,7 +20,6 @@ MA 02111-1307, USA.
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <time.h>
-#include <fstream>
 
 typedef struct
 {
@@ -105,7 +104,7 @@ void program()
 	SDL_FreeSurface(bildschirm);
 }
 
-int menu(SDL_Surface *ausgabe_bild, int field=2)
+int menu(SDL_Surface *ausgabe_bild, int field)
 {
 	SDL_ShowCursor(SDL_DISABLE);
 
@@ -419,7 +418,7 @@ void game(setting game_s)
 				&& event_m.button.y>=matrix_pos.y && event_m.button.y<=matrix_pos.h+matrix_pos.y)
 			{			
 				klicks_fl++;
-				akt_anzahl=look_for_match(matrix, int(event_m.button.x-matrix_pos.x)/50, int(event_m.button.y-matrix_pos.y)/50);
+				akt_anzahl=look_for_match(matrix, (event_m.button.x-matrix_pos.x)/50, (event_m.button.y-matrix_pos.y)/50);
 				if(akt_anzahl>gr_anzahl)
 				{
 					gr_anzahl=akt_anzahl;					
@@ -432,25 +431,25 @@ void game(setting game_s)
 				&& event_m.button.y>matrix_pos.y-50 && event_m.button.y<matrix_pos.y)
 			{			
 				klicks_pf++;
-				change_matrix(matrix, "oben",int((event_m.button.x-matrix_pos.x)/50));
+				change_matrix(matrix, "oben", (event_m.button.x-matrix_pos.x)/50);
 			}			
 			if(event_m.button.x>matrix_pos.w+matrix_pos.x && event_m.button.x<matrix_pos.w+matrix_pos.x+50
 				&& event_m.button.y>matrix_pos.y && event_m.button.y<matrix_pos.h+matrix_pos.y)
 			{			
 				klicks_pf++;
-				change_matrix(matrix, "rechts",int((event_m.button.y-matrix_pos.y)/50));
+				change_matrix(matrix, "rechts", (event_m.button.y-matrix_pos.y)/50);
 			}
 			if(event_m.button.x>matrix_pos.x && event_m.button.x<matrix_pos.w+matrix_pos.x
 				&& event_m.button.y>matrix_pos.y+matrix_pos.h && event_m.button.y<matrix_pos.y+matrix_pos.h+50)
 			{			
 				klicks_pf++;
-				change_matrix(matrix, "unten",int((event_m.button.x-matrix_pos.x)/50));
+				change_matrix(matrix, "unten", (event_m.button.x-matrix_pos.x)/50);
 			}
 			if(event_m.button.x>matrix_pos.x-50 && event_m.button.x<matrix_pos.x
 				&& event_m.button.y>matrix_pos.y && event_m.button.y<matrix_pos.h+matrix_pos.y)
 			{			
 				klicks_pf++;
-				change_matrix(matrix, "links",int((event_m.button.y-matrix_pos.y)/50));
+				change_matrix(matrix, "links", (event_m.button.y-matrix_pos.y)/50);
 			}
 			
 			break;
@@ -757,7 +756,7 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 	char t_k[3][10];
 	char t_stat2[3][60];
 	char t_rest[3][10];
-	char t_pos[50];
+	char t_pos[55];
 	char t_pos_int[5];
 
 	hs hs_in;
@@ -789,7 +788,7 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 	strcpy(t_stat1[3],"Klicks auf Pfeile:");
 
 	sprintf(t_rest[0], "%d", max_anz);
-	gcvt(double(k_ges)/(time/1000),4,t_rest[1]);
+	gcvt(k_ges/(time/1000),4,t_rest[1]);
 	
 	sprintf(t_rest[2], "%d", time2/1000);
 	strcat(t_rest[2]," Sek.");
@@ -875,7 +874,7 @@ char *input_name(SDL_Surface *prev_bild)
 	int i=0;
 	int taste=0;
 
-	char t_name[20]="";
+	char *t_name="";
 	char *temp_data="grafik/input.bmp";
 
 	SDL_SaveBMP(prev_bild,temp_data);
@@ -937,36 +936,36 @@ char *input_name(SDL_Surface *prev_bild)
 
 void write_hs(hs *hs_out)
 {
-	std::ofstream highscore_out("highscore.txt", std::ios::out | std::ios::trunc);
+	FILE *fp = fopen("highscore.txt", "w");
 
 	for(int i=0;i<10;i++)
 	{
-		highscore_out<<hs_out->name<<std::endl;
-		highscore_out<<hs_out->punkte<<std::endl;
-		highscore_out<<hs_out->gr_fla<<std::endl;
-		highscore_out<<hs_out->zeit<<std::endl<<std::endl;
+		fprintf(fp, "%s\n", hs_out->name);
+		fprintf(fp, "%d\n", hs_out->punkte);
+		fprintf(fp, "%d\n", hs_out->gr_fla);
+		fprintf(fp, "%d\n\n", hs_out->zeit);
 
 		hs_out++;
 	}
 
-	highscore_out.close();
+	fclose(fp);
 }
 
 void read_hs(hs *hs_in)
 {
-	std::ifstream highscore_in("highscore.txt", std::ios::in);
+	FILE *fp = fopen("highscore.txt", "r");
 	
 	for(int i=0;i<10;i++)
 	{
-		highscore_in>>hs_in->name;
-		highscore_in>>hs_in->punkte;
-		highscore_in>>hs_in->gr_fla;
-		highscore_in>>hs_in->zeit;
+		fscanf(fp, "%s", hs_in->name);
+		fscanf(fp, "%d", &hs_in->punkte);
+		fscanf(fp, "%d", &hs_in->gr_fla);
+		fscanf(fp, "%d", &hs_in->zeit);
 
 		hs_in++;
 	}
 
-	highscore_in.close();	
+	fclose(fp);
 }
 
 void hilfe_menue()
@@ -984,15 +983,17 @@ void hilfe_menue()
 	SDL_Color black={0,0,0};
 
 	char hilfe[20][200];
+	memset(hilfe, 0, sizeof(hilfe));
 
 	SDL_ShowCursor(0);
 
-	std::ifstream hilfe_in("hilfe.txt", std::ios::in);
+	FILE *fp = fopen("hilfe.txt", "r");
 	for(int i=0;i<15;i++)
 	{
-		hilfe_in.getline(hilfe[i],100);
+		fgets(hilfe[i], 200, fp);
+		strtok(hilfe[i], "\r\n");
 	}
-	hilfe_in.close();
+	fclose(fp);
 
 	SDL_BlitSurface(hilfe_back,0,bild,0);
 	for(int j=0;j<15;j++)
