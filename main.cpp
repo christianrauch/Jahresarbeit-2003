@@ -3,12 +3,12 @@ Jahresarbeit2003 - Jahresarbeit im Fach Informatik
 Copyright (C) 2003  Christian Rauch
 http://www.sdlgames.de.tf
 
-Dieses Programm ist freie Software. Sie können es unter den Bedingungen der GNU General Public License,
-wie von der Free Software Foundation veröffentlicht, weitergeben und/oder modifizieren, entweder gemäß
-Version 2 der Lizenz oder (nach Ihrer Option) jeder späteren Version. 
+Dieses Programm ist freie Software. Sie kÃ¶nnen es unter den Bedingungen der GNU General Public License,
+wie von der Free Software Foundation verÃ¶ffentlicht, weitergeben und/oder modifizieren, entweder gemÃ¤ÃŸ
+Version 2 der Lizenz oder (nach Ihrer Option) jeder spÃ¤teren Version. 
 
-Die Veröffentlichung dieses Programms erfolgt in der Hoffnung, daß es Ihnen von Nutzen sein wird, aber
-OHNE IRGENDEINE GARANTIE, sogar ohne die implizite Garantie der MARKTREIFE oder der VERWENDBARKEIT FÜR
+Die VerÃ¶ffentlichung dieses Programms erfolgt in der Hoffnung, daÃŸ es Ihnen von Nutzen sein wird, aber
+OHNE IRGENDEINE GARANTIE, sogar ohne die implizite Garantie der MARKTREIFE oder der VERWENDBARKEIT FÃœR
 EINEN BESTIMMTEN ZWECK. Details finden Sie in der GNU General Public License. 
 
 Sie sollten eine Kopie der GNU General Public License zusammen mit diesem Programm erhalten haben.
@@ -242,7 +242,7 @@ void hs_menue(SDL_Surface *bild)
 
 	SDL_BlitSurface(TTF_RenderText_Solid(bradley,"Name",black),0,bild,&name_pos);
 	SDL_BlitSurface(TTF_RenderText_Solid(bradley,"Punkte",black),0,bild,&punkte_pos);
-	SDL_BlitSurface(TTF_RenderText_Solid(bradley,"Fläche",black),0,bild,&gr_fla_pos);
+	SDL_BlitSurface(TTF_RenderText_Solid(bradley,"FlÃ¤che",black),0,bild,&gr_fla_pos);
 	SDL_BlitSurface(TTF_RenderText_Solid(bradley,"Zeit",black),0,bild,&zeit_pos);
 
 	name_pos.x=100, name_pos.y=200;
@@ -300,16 +300,16 @@ void hardware_info(SDL_Surface *bild)
 
 	SDL_ShowCursor(0);
 
-	strcpy(text_hardware[0],"Hardwareoberflächen:");
+	strcpy(text_hardware[0],"HardwareoberflÃ¤chen:");
 	strcpy(text_hardware[1],"Windowmanager:");
-	strcpy(text_hardware[2],"Beschleunigung von Hard- zu Hardware Übertragungen:");
-	strcpy(text_hardware[3],"Beschleunigung von Hard- zu Hardware Transparetübertragungen:");
-	strcpy(text_hardware[4],"Beschleunigung von Hard- zu Hardware Alphakanalübertragungen:");
-	strcpy(text_hardware[5],"Beschleunigung von Soft- zu Hardware Übertragungen:");
-	strcpy(text_hardware[6],"Beschleunigung von Soft- zu Hardware Tranzparentübertragungen:");
-	strcpy(text_hardware[7],"Beschleunigung von Soft- zu Hardware Alphakanalübertragungen:");
-	strcpy(text_hardware[8],"Beschleunigung von Flächenfüllungen:");
-	strcpy(text_hardware[9],"Verfügbarer Videospeicher:");
+	strcpy(text_hardware[2],"Beschleunigung von Hard- zu Hardware Ãœbertragungen:");
+	strcpy(text_hardware[3],"Beschleunigung von Hard- zu Hardware TransparetÃ¼bertragungen:");
+	strcpy(text_hardware[4],"Beschleunigung von Hard- zu Hardware AlphakanalÃ¼bertragungen:");
+	strcpy(text_hardware[5],"Beschleunigung von Soft- zu Hardware Ãœbertragungen:");
+	strcpy(text_hardware[6],"Beschleunigung von Soft- zu Hardware TranzparentÃ¼bertragungen:");
+	strcpy(text_hardware[7],"Beschleunigung von Soft- zu Hardware AlphakanalÃ¼bertragungen:");
+	strcpy(text_hardware[8],"Beschleunigung von FlÃ¤chenfÃ¼llungen:");
+	strcpy(text_hardware[9],"VerfÃ¼gbarer Videospeicher:");
 	strcpy(text_hardware[10],"Farben:");
 
 	strcpy(t_h2[0],video_hardware->hw_available ? "Ja" : "Nein");
@@ -327,7 +327,7 @@ void hardware_info(SDL_Surface *bild)
 	strcat(t_h2[10]," Bit");
 
 	SDL_BlitSurface(about,0,bild,0);
-	SDL_BlitSurface(TTF_RenderText_Solid(arial_bold,"Informationen über Videohardware:",black),0,bild,&headline_pos);
+	SDL_BlitSurface(TTF_RenderText_Solid(arial_bold,"Informationen Ã¼ber Videohardware:",black),0,bild,&headline_pos);
 	for(int j=0;j<11;j++)
 	{
 		SDL_BlitSurface(TTF_RenderText_Solid(arial,text_hardware[j],black),0,bild,&text_pos);
@@ -795,9 +795,9 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 	_itoa(time2/1000,t_rest[2],10);
 	strcat(t_rest[2]," Sek.");
 
-	strcpy(t_stat2[0],"Gr. Fläche:");
+	strcpy(t_stat2[0],"Gr. FlÃ¤che:");
 	strcpy(t_stat2[1],"Klicks pro Sekunde:");
-	strcpy(t_stat2[2],"Zeit für gr. Fläche:");
+	strcpy(t_stat2[2],"Zeit fÃ¼r gr. FlÃ¤che:");
 	
 	SDL_BlitSurface(stat_back,0,bild,0);
 
@@ -824,7 +824,7 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 	}
 	else
 	{
-		strcpy(t_pos,"Ihre Leistung war nicht ausreichend für die Highscore");
+		strcpy(t_pos,"Ihre Leistung war nicht ausreichend fÃ¼r die Highscore");
 	}
 
 	SDL_BlitSurface(TTF_RenderText_Solid(copperplate2,t_pos,black),0,bild,&pos_pos);
@@ -1000,7 +1000,7 @@ void hilfe_menue()
 		SDL_BlitSurface(TTF_RenderText_Solid(courier,hilfe[j],black),0,bild,&hilfe_pos);
 		hilfe_pos.y+=25;
 	}
-	SDL_BlitSurface(TTF_RenderText_Solid(courier,"<belibige Taste drücken um zurück zu kehren>",black),0,bild,&ende_pos);
+	SDL_BlitSurface(TTF_RenderText_Solid(courier,"<belibige Taste drÃ¼cken um zurÃ¼ck zu kehren>",black),0,bild,&ende_pos);
 	SDL_UpdateRect(bild,0,0,0,0);
 
 	do
