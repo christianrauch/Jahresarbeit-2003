@@ -630,6 +630,11 @@ int look_for_match(int m[9][9], int x, int y)
 	pos_x[0]=x;
 	pos_y[0]=y;
 
+	if(farbe==0)
+	{
+		return 0;
+	}
+
 	do
 	{
 		if(m[pos_x[i]][pos_y[i]-1]==farbe)
@@ -683,7 +688,7 @@ int look_for_match(int m[9][9], int x, int y)
 
 	}while(i!=0);
 
-		return anzahl;
+	return anzahl;
 }
 
 int whether_gameend(int m[9][9])
