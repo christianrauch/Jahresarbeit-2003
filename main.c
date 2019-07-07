@@ -76,7 +76,8 @@ void program()
 
 	bildschirm=SDL_SetVideoMode(800,600,0,SDL_HWSURFACE);	
 	
-	while(1)
+	int running=1;
+	while(running)
 	{
 		switch(menu(bildschirm, field))
 		{
@@ -97,7 +98,8 @@ void program()
 			field=5;
 			break;
 		case 6:
-			return;
+			running=0;
+			break;
 		}
 	}
 	
