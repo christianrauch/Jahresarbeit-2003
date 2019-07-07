@@ -1,0 +1,13 @@
+Das Programm "Jahresarbeit 2003" entstand als Jahresarbeit
+im Fach Informatik. Nach Spielstart sieht man ein 9x9 Feld
+mit verschiedenfarbigen Quadraten. Am Rand des Feldes sind
+Pfeile zu erkennen, welche genutzt werden um die Reihen und
+Spalten in denen sich die Quadrate befinden zu verschieben.
+Zusammenhängende gleichfarbige Quadrate bilden eine Fläche,
+welche durch draufklicken entfernt wird.
+Ziel des Spieles ist es eine möglichst große Fläche in kür-
+zester Zeit weg zu klicken. Das Spiel ist zu Ende wenn alle
+Quadrate entfernt sind oder es keine Möglichkeit mehr gibt
+um die restlichen Quadrate zu entfernen. Jedoch sollte man
+um alle Quadrate zu entfernen so wenig Klicks wie möglich
+gebrauchen, da diese die Endpunktzahl verringern.
