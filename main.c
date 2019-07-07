@@ -236,12 +236,12 @@ void hs_menue(SDL_Surface *bild)
 
 	SDL_BlitSurface(highscore_back,0,bild,0);
 
-	SDL_BlitSurface(TTF_RenderText_Solid(bloody,"HIGHSCORE",red),0,bild,&headline_pos);
+	SDL_BlitSurface(TTF_RenderUTF8_Solid(bloody,"HIGHSCORE",red),0,bild,&headline_pos);
 
-	SDL_BlitSurface(TTF_RenderText_Solid(bradley,"Name",black),0,bild,&name_pos);
-	SDL_BlitSurface(TTF_RenderText_Solid(bradley,"Punkte",black),0,bild,&punkte_pos);
-	SDL_BlitSurface(TTF_RenderText_Solid(bradley,"Fläche",black),0,bild,&gr_fla_pos);
-	SDL_BlitSurface(TTF_RenderText_Solid(bradley,"Zeit",black),0,bild,&zeit_pos);
+	SDL_BlitSurface(TTF_RenderUTF8_Solid(bradley,"Name",black),0,bild,&name_pos);
+	SDL_BlitSurface(TTF_RenderUTF8_Solid(bradley,"Punkte",black),0,bild,&punkte_pos);
+	SDL_BlitSurface(TTF_RenderUTF8_Solid(bradley,"Fläche",black),0,bild,&gr_fla_pos);
+	SDL_BlitSurface(TTF_RenderUTF8_Solid(bradley,"Zeit",black),0,bild,&zeit_pos);
 
 	name_pos.x=100, name_pos.y=200;
 	punkte_pos.x=500, punkte_pos.y=200;
@@ -250,17 +250,17 @@ void hs_menue(SDL_Surface *bild)
 
 	for(int j=0;j<10;j++)
 	{
-		SDL_BlitSurface(TTF_RenderText_Solid(comic,highscorer[j].name,black),0,bild,&name_pos);
+		SDL_BlitSurface(TTF_RenderUTF8_Solid(comic,highscorer[j].name,black),0,bild,&name_pos);
 		name_pos.y+=z_abst;
-		SDL_BlitSurface(TTF_RenderText_Solid(bradley,punkte[j],black),0,bild,&punkte_pos);
+		SDL_BlitSurface(TTF_RenderUTF8_Solid(bradley,punkte[j],black),0,bild,&punkte_pos);
 		punkte_pos.y+=z_abst;
-		SDL_BlitSurface(TTF_RenderText_Solid(bradley,gr_fla[j],black),0,bild,&gr_fla_pos);
+		SDL_BlitSurface(TTF_RenderUTF8_Solid(bradley,gr_fla[j],black),0,bild,&gr_fla_pos);
 		gr_fla_pos.y+=z_abst;
-		SDL_BlitSurface(TTF_RenderText_Solid(bradley,zeit[j],black),0,bild,&zeit_pos);
+		SDL_BlitSurface(TTF_RenderUTF8_Solid(bradley,zeit[j],black),0,bild,&zeit_pos);
 		zeit_pos.y+=z_abst;
 	}
 	
-	SDL_BlitSurface(TTF_RenderText_Solid(copperplate2,"<bel. Taste druecken um zurueck zu kehren>",black),0,bild,&ende_pos);
+	SDL_BlitSurface(TTF_RenderUTF8_Solid(copperplate2,"<bel. Taste druecken um zurueck zu kehren>",black),0,bild,&ende_pos);
 	SDL_UpdateRect(bild,0,0,0,0);
 
 	SDL_Event highscore_event;
@@ -325,15 +325,15 @@ void hardware_info(SDL_Surface *bild)
 	strcat(t_h2[10]," Bit");
 
 	SDL_BlitSurface(about,0,bild,0);
-	SDL_BlitSurface(TTF_RenderText_Solid(arial_bold,"Informationen über Videohardware:",black),0,bild,&headline_pos);
+	SDL_BlitSurface(TTF_RenderUTF8_Solid(arial_bold,"Informationen über Videohardware:",black),0,bild,&headline_pos);
 	for(int j=0;j<11;j++)
 	{
-		SDL_BlitSurface(TTF_RenderText_Solid(arial,text_hardware[j],black),0,bild,&text_pos);
-		SDL_BlitSurface(TTF_RenderText_Solid(arial,t_h2[j],black),0,bild,&t_h2_pos);
+		SDL_BlitSurface(TTF_RenderUTF8_Solid(arial,text_hardware[j],black),0,bild,&text_pos);
+		SDL_BlitSurface(TTF_RenderUTF8_Solid(arial,t_h2[j],black),0,bild,&t_h2_pos);
 		text_pos.y+=30;
 		t_h2_pos.y+=30;
 	}
-	SDL_BlitSurface(TTF_RenderText_Solid(arial,"<beliebige Taste>",black),0,bild,&ende_pos);
+	SDL_BlitSurface(TTF_RenderUTF8_Solid(arial,"<beliebige Taste>",black),0,bild,&ende_pos);
 	SDL_UpdateRect(bild,0,0,0,0);
 	
 	SDL_Event about_event;
@@ -799,7 +799,7 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 	
 	SDL_BlitSurface(stat_back,0,bild,0);
 
-	SDL_BlitSurface(TTF_RenderText_Solid(copperplate,"SPIELENDE",black),0,bild,&headline);	
+	SDL_BlitSurface(TTF_RenderUTF8_Solid(copperplate,"SPIELENDE",black),0,bild,&headline);	
 	
 	hs_in.punkte=p;
 	hs_in.gr_fla=max_anz;
@@ -809,7 +809,7 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 
 	if(pos!=0)
 	{
-		SDL_BlitSurface(TTF_RenderText_Solid(copperplate2,"Name: ",black),0,bild,&name_pos);
+		SDL_BlitSurface(TTF_RenderUTF8_Solid(copperplate2,"Name: ",black),0,bild,&name_pos);
 		strcpy(t_name,input_name(bild));
 
 		strcpy(hs_in.name,t_name);
@@ -826,29 +826,29 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 		strcpy(t_pos,"Ihre Leistung war nicht ausreichend für die Highscore");
 	}
 
-	SDL_BlitSurface(TTF_RenderText_Solid(copperplate2,t_pos,black),0,bild,&pos_pos);
+	SDL_BlitSurface(TTF_RenderUTF8_Solid(copperplate2,t_pos,black),0,bild,&pos_pos);
 	
-	SDL_BlitSurface(TTF_RenderText_Solid(copperplate2,t_zeit,black),0,bild,&time_pos);
-	SDL_BlitSurface(TTF_RenderText_Solid(copperplate2,t_punkte,black),0,bild,&punkte_pos);
+	SDL_BlitSurface(TTF_RenderUTF8_Solid(copperplate2,t_zeit,black),0,bild,&time_pos);
+	SDL_BlitSurface(TTF_RenderUTF8_Solid(copperplate2,t_punkte,black),0,bild,&punkte_pos);
 	
 	for(int i=0;i<4;i++)
 	{
-		SDL_BlitSurface(TTF_RenderText_Solid(copperplate2,t_stat1[i],black),0,bild,&stat1_pos);
+		SDL_BlitSurface(TTF_RenderUTF8_Solid(copperplate2,t_stat1[i],black),0,bild,&stat1_pos);
 		stat1_pos.y+=30;
 		if(i==3) continue;
-		SDL_BlitSurface(TTF_RenderText_Solid(copperplate2,t_k[i],black),0,bild,&k_pos);
+		SDL_BlitSurface(TTF_RenderUTF8_Solid(copperplate2,t_k[i],black),0,bild,&k_pos);
 		k_pos.y+=30;
 	}
 
 	for(int i=0;i<3;i++)
 	{
-		SDL_BlitSurface(TTF_RenderText_Solid(copperplate2,t_stat2[i],black),0,bild,&stat2_pos);
+		SDL_BlitSurface(TTF_RenderUTF8_Solid(copperplate2,t_stat2[i],black),0,bild,&stat2_pos);
 		stat2_pos.y+=30;
-		SDL_BlitSurface(TTF_RenderText_Solid(copperplate2,t_rest[i],black),0,bild,&rest_pos);
+		SDL_BlitSurface(TTF_RenderUTF8_Solid(copperplate2,t_rest[i],black),0,bild,&rest_pos);
 		rest_pos.y+=30;
 	}
 
-	SDL_BlitSurface(TTF_RenderText_Solid(copperplate2,"<bel. Taste druecken um zurueck zu kehren>",black),0,bild,&ende_pos);
+	SDL_BlitSurface(TTF_RenderUTF8_Solid(copperplate2,"<bel. Taste druecken um zurueck zu kehren>",black),0,bild,&ende_pos);
 	SDL_UpdateRect(bild,0,0,0,0);
 
 	do
@@ -887,7 +887,7 @@ char *input_name(SDL_Surface *prev_bild)
 		{
 			SDL_BlitSurface(prev_bild,0,bild,0);			
 			
-			SDL_BlitSurface(TTF_RenderText_Solid(copperplate2,t_name,black),0,bild,&name_pos);		
+			SDL_BlitSurface(TTF_RenderUTF8_Solid(copperplate2,t_name,black),0,bild,&name_pos);		
 		
 			SDL_UpdateRect(bild,0,0,0,0);
 
@@ -998,10 +998,10 @@ void hilfe_menue()
 	SDL_BlitSurface(hilfe_back,0,bild,0);
 	for(int j=0;j<15;j++)
 	{
-		SDL_BlitSurface(TTF_RenderText_Solid(courier,hilfe[j],black),0,bild,&hilfe_pos);
+		SDL_BlitSurface(TTF_RenderUTF8_Solid(courier,hilfe[j],black),0,bild,&hilfe_pos);
 		hilfe_pos.y+=25;
 	}
-	SDL_BlitSurface(TTF_RenderText_Solid(courier,"<belibige Taste drücken um zurück zu kehren>",black),0,bild,&ende_pos);
+	SDL_BlitSurface(TTF_RenderUTF8_Solid(courier,"<belibige Taste drücken um zurück zu kehren>",black),0,bild,&ende_pos);
 	SDL_UpdateRect(bild,0,0,0,0);
 
 	do
