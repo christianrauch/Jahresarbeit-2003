@@ -16,12 +16,11 @@ Falls nicht, schreiben Sie an die Free Software Foundation, Inc., 59 Temple Plac
 MA 02111-1307, USA.
 */
 
-#include<windows.h>
-#include"sdl\include\sdl.h"
-#include"sdl\SDL_image\include\SDL_image.h"
-#include"sdl\SDL_ttf\include\SDL_ttf.h"
-#include<time.h>
-#include<fstream.h>
+#include <SDL.h>
+#include <SDL_image.h>
+#include <SDL_ttf.h>
+#include <time.h>
+#include <fstream>
 
 typedef struct
 {
@@ -58,7 +57,7 @@ void hilfe_menue();
 void in_hs(hs hs_input);
 int pos_hs(hs hs_input);
 
-int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
+int main()
 {
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER);
 	TTF_Init();
@@ -231,9 +230,9 @@ void hs_menue(SDL_Surface *bild)
 
 	for(int i=0;i<10;i++)
 	{
-		_itoa(highscorer[i].punkte,punkte[i],10);
-		_itoa(highscorer[i].gr_fla,gr_fla[i],10);
-		_itoa(highscorer[i].zeit,zeit[i],10);
+		sprintf(punkte[i],"%d", highscorer[i].punkte);
+		sprintf(gr_fla[i],"%d", highscorer[i].gr_fla);
+		sprintf(zeit[i],"%d", highscorer[i].zeit);
 	}
 
 	SDL_BlitSurface(highscore_back,0,bild,0);
@@ -321,9 +320,9 @@ void hardware_info(SDL_Surface *bild)
 	strcpy(t_h2[6],video_hardware->blit_sw_CC ? "Ja" : "Nein");
 	strcpy(t_h2[7],video_hardware->blit_sw_A ? "Ja" : "Nein");
 	strcpy(t_h2[8],video_hardware->blit_fill ? "Ja" : "Nein");
-	_itoa(video_hardware->video_mem, t_h2[9], 10);
+	sprintf(t_h2[9], "%d", video_hardware->video_mem);
 	strcat(t_h2[9]," KB");
-	_itoa(video_hardware->vfmt->BitsPerPixel, t_h2[10], 10);
+	sprintf(t_h2[10], "%d", video_hardware->vfmt->BitsPerPixel);
 	strcat(t_h2[10]," Bit");
 
 	SDL_BlitSurface(about,0,bild,0);
@@ -767,8 +766,8 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 	
 	p=(max_anz*1000000*100)/(time2*k_ges);
 
-	_i64toa((int)time/60000,t_zeit_min,10);
-	_i64toa((time%60000/1000),t_zeit_sek,10);
+	sprintf(t_zeit_min, "%d", (int)time/60000);
+	sprintf(t_zeit_sek, "%d", (time%60000/1000));
 
 	strcpy(t_zeit,"Zeit: ");
 	strcat(t_zeit,t_zeit_min);
@@ -776,23 +775,23 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 	strcat(t_zeit,t_zeit_sek);
 	strcat(t_zeit," Sek.");
 
-	_i64toa(p,t_p,10);
+	sprintf(t_p, "%d", p);
 	strcpy(t_punkte,"Punkte: ");
 	strcat(t_punkte,t_p);
 
-	_i64toa(k_ges,t_k[0],10);
-	_i64toa(k_fla,t_k[1],10);
-	_i64toa(k_pfe,t_k[2],10);
+	sprintf(t_k[0], "%d", k_ges);
+	sprintf(t_k[1], "%d", k_fla);
+	sprintf(t_k[2], "%d", k_pfe);
 
 	strcpy(t_stat1[0],"Statistik:");
 	strcpy(t_stat1[1],"Klicks gesammt:");
 	strcpy(t_stat1[2],"Klicks im Feld:");
 	strcpy(t_stat1[3],"Klicks auf Pfeile:");
 
-	_itoa(max_anz,t_rest[0],10);
-	_gcvt(double(k_ges)/(time/1000),4,t_rest[1]);
+	sprintf(t_rest[0], "%d", max_anz);
+	gcvt(double(k_ges)/(time/1000),4,t_rest[1]);
 	
-	_itoa(time2/1000,t_rest[2],10);
+	sprintf(t_rest[2], "%d", time2/1000);
 	strcat(t_rest[2]," Sek.");
 
 	strcpy(t_stat2[0],"Gr. Fläche:");
@@ -819,7 +818,8 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 		in_hs(hs_in);
 		
 		strcpy(t_pos,"Sie haben den ");
-		strcat(t_pos,_itoa(pos,t_pos_int,10));
+		sprintf(t_pos_int, "%d", pos);
+		strcat(t_pos,t_pos_int);
 		strcat(t_pos,"-ten Platz belegt");
 	}
 	else
@@ -841,7 +841,7 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 		k_pos.y+=30;
 	}
 
-	for(i=0;i<3;i++)
+	for(int i=0;i<3;i++)
 	{
 		SDL_BlitSurface(TTF_RenderText_Solid(copperplate2,t_stat2[i],black),0,bild,&stat2_pos);
 		stat2_pos.y+=30;
@@ -937,14 +937,14 @@ char *input_name(SDL_Surface *prev_bild)
 
 void write_hs(hs *hs_out)
 {
-	ofstream highscore_out("highscore.txt",ios::out | ios::trunc | ios::nocreate);
+	std::ofstream highscore_out("highscore.txt", std::ios::out | std::ios::trunc);
 
 	for(int i=0;i<10;i++)
 	{
-		highscore_out<<hs_out->name<<endl;
-		highscore_out<<hs_out->punkte<<endl;
-		highscore_out<<hs_out->gr_fla<<endl;
-		highscore_out<<hs_out->zeit<<endl<<endl;
+		highscore_out<<hs_out->name<<std::endl;
+		highscore_out<<hs_out->punkte<<std::endl;
+		highscore_out<<hs_out->gr_fla<<std::endl;
+		highscore_out<<hs_out->zeit<<std::endl<<std::endl;
 
 		hs_out++;
 	}
@@ -954,7 +954,7 @@ void write_hs(hs *hs_out)
 
 void read_hs(hs *hs_in)
 {
-	ifstream highscore_in("highscore.txt",ios::in | ios::nocreate);
+	std::ifstream highscore_in("highscore.txt", std::ios::in);
 	
 	for(int i=0;i<10;i++)
 	{
@@ -987,7 +987,7 @@ void hilfe_menue()
 
 	SDL_ShowCursor(0);
 
-	ifstream hilfe_in("hilfe.txt", ios::in | ios::nocreate);
+	std::ifstream hilfe_in("hilfe.txt", std::ios::in);
 	for(int i=0;i<15;i++)
 	{
 		hilfe_in.getline(hilfe[i],100);
