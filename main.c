@@ -49,7 +49,7 @@ void change_matrix(int matrix[9][9], char *arrows, int nr);
 int look_for_match(int matrix[9][9], int pos_x, int pos_y);
 int whether_gameend(int m[9][9]);
 void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_anz);
-char *input_name(SDL_Surface *prev_bild);
+void input_name(SDL_Surface *prev_bild, char *t_name);
 void write_hs(hs *hs_out);
 void read_hs(hs *hs_in);
 void hilfe_menue();
@@ -393,7 +393,7 @@ void game(setting game_s)
 	while(!whether_gameend(matrix))
 	{
 		draw_matrix(matrix,matrix_pos,game_s.piece_set);
-		SDL_PollEvent(&event_m);
+		SDL_WaitEvent(&event_m);
 		switch(event_m.type)
 		{
 		case SDL_KEYDOWN:
@@ -800,7 +800,7 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 	if(pos!=0)
 	{
 		SDL_BlitSurface(TTF_RenderUTF8_Solid(copperplate2,"Name: ",black),0,bild,&name_pos);
-		strcpy(t_name,input_name(bild));
+		input_name(bild, t_name);
 
 		strcpy(hs_in.name,t_name);
 
@@ -850,7 +850,7 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 	SDL_FreeSurface(stat_back);
 }
 
-char *input_name(SDL_Surface *prev_bild)
+void input_name(SDL_Surface *prev_bild, char *t_name)
 {
 	SDL_Surface *bild=SDL_GetVideoSurface();
 	SDL_Event input_event;
@@ -861,16 +861,17 @@ char *input_name(SDL_Surface *prev_bild)
 	int i=0;
 	int taste=0;
 
-	char *t_name="";
 	char *temp_data="grafik/input.bmp";
 
 	SDL_SaveBMP(prev_bild,temp_data);
 	prev_bild=SDL_LoadBMP(temp_data);
 	remove(temp_data);
 
+	memset(t_name, 0, 30);
+
 	do
 	{
-		if(SDL_PollEvent(&input_event))
+		if(SDL_WaitEvent(&input_event))
 		{
 			SDL_BlitSurface(prev_bild,0,bild,0);
 
@@ -917,8 +918,6 @@ char *input_name(SDL_Surface *prev_bild)
 
 	SDL_FreeSurface(bild);
 	SDL_FreeSurface(prev_bild);
-
-	return t_name;
 }
 
 void write_hs(hs *hs_out)
