@@ -19,6 +19,7 @@ MA 02111-1307, USA.
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include <SDL_syswm.h>
 #include <time.h>
 
 typedef struct
@@ -36,12 +37,12 @@ typedef struct
 
 
 void program();
-void menu(SDL_Surface *ausgabe_bild, int *field);
-void hs_menue(SDL_Surface *bild);
-void hardware_info(SDL_Surface *bild);
-void free_game(SDL_Surface *bildschirm);
+void menu(SDL_Renderer *ausgabe_bild, int *field);
+void hs_menue(SDL_Renderer *bild);
+void hardware_info(SDL_Renderer *bild);
+void free_game(SDL_Renderer *bildschirm);
 setting game_setting();
-void game(setting game);
+void game(SDL_Renderer *bildschirm, setting game);
 void random_matrix(int matrix[9][9]);
 void draw_matrix(int matrix[9][9], SDL_Rect matrix_pos, char* piece_set_path);
 void draw_arrows(SDL_Rect Matrix_pos);
@@ -49,10 +50,10 @@ void change_matrix(int matrix[9][9], char *arrows, int nr);
 int look_for_match(int matrix[9][9], int pos_x, int pos_y);
 int whether_gameend(int m[9][9]);
 void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_anz);
-void input_name(SDL_Surface *prev_bild, char *t_name);
+void input_name(SDL_Renderer *prev_bild, char *t_name);
 void write_hs(hs *hs_out);
 void read_hs(hs *hs_in);
-void hilfe_menue();
+void hilfe_menue(SDL_Renderer *bild);
 void in_hs(hs hs_input);
 int pos_hs(hs hs_input);
 
@@ -60,7 +61,6 @@ int main()
 {
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER);
 	TTF_Init();
-	SDL_WM_SetCaption("JA2003",0);
 
 	program();
 
@@ -69,12 +69,17 @@ int main()
 	return 0;
 }
 
+SDL_Window *window;
+
 void program()
 {
-	SDL_Surface *bildschirm;
 	int field=2;
-
-	bildschirm=SDL_SetVideoMode(800,600,0,SDL_HWSURFACE);
+	
+	window = SDL_CreateWindow("JA2003",
+		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+		800, 600, 0);
+	
+	SDL_Renderer *bildschirm = SDL_CreateRenderer(window, -1, 0);
 
 	int running=1;
 	while(running)
@@ -92,31 +97,37 @@ void program()
 			hardware_info(bildschirm);
 			break;
 		case 5:
-			hilfe_menue();
+			hilfe_menue(bildschirm);
 			break;
 		case 6:
 			running=0;
 			break;
 		}
 	}
-
-	SDL_FreeSurface(bildschirm);
 }
 
-void menu(SDL_Surface *ausgabe_bild, int *field)
+void menu(SDL_Renderer *ausgabe_bild, int *field)
 {
 	SDL_ShowCursor(SDL_DISABLE);
 
-	SDL_Surface *background;
-	SDL_Surface *menu_text;
-	SDL_Surface *menu_back;
+	SDL_Texture *background;
+	SDL_Texture *menu_text;
+	SDL_Texture *menu_back;
 
 	SDL_Event menu_event;
 
-	background=SDL_DisplayFormat(IMG_Load("grafik/hintergrund.jpg"));
-	menu_text=SDL_DisplayFormat(IMG_Load("grafik/menu_text.gif"));
-	menu_back=SDL_DisplayFormat(IMG_Load("grafik/menu_back.jpg"));
-	SDL_SetColorKey(menu_text,SDL_SRCCOLORKEY | SDL_RLEACCEL,SDL_MapRGB(menu_text->format,255,255,255));
+	SDL_Surface *surf;
+	surf = SDL_ConvertSurfaceFormat(IMG_Load("grafik/hintergrund.jpg"), SDL_PIXELFORMAT_RGB24, 0);
+	background=SDL_CreateTextureFromSurface(ausgabe_bild, surf);
+	SDL_FreeSurface(surf);
+	surf = SDL_ConvertSurfaceFormat(IMG_Load("grafik/menu_text.gif"), SDL_PIXELFORMAT_RGB24, 0);
+	SDL_SetColorKey(surf,SDL_TRUE | SDL_RLEACCEL,SDL_MapRGB(surf->format,255,255,255));
+	menu_text=SDL_CreateTextureFromSurface(ausgabe_bild, surf);
+	SDL_FreeSurface(surf);
+	surf = SDL_ConvertSurfaceFormat(IMG_Load("grafik/menu_back.jpg"), SDL_PIXELFORMAT_RGB24, 0);
+	menu_back=SDL_CreateTextureFromSurface(ausgabe_bild, surf);
+	SDL_FreeSurface(surf);
+
 
 	SDL_Rect area;
 	SDL_Rect ausgabe_area;
@@ -126,7 +137,7 @@ void menu(SDL_Surface *ausgabe_bild, int *field)
 	menu_pos.x=250;
 	menu_pos.y=150;
 	menu_pos.w=300;
-	menu_pos.h=350;
+	menu_pos.h=50;
 
 	area.x=0;
 	area.w=300;
@@ -138,6 +149,8 @@ void menu(SDL_Surface *ausgabe_bild, int *field)
 	menu_back_pos.h=50;
 
 	ausgabe_area.x=menu_pos.x;
+	ausgabe_area.w=300;
+	ausgabe_area.h=50;
 
 	int running=1;
 	while(running)
@@ -152,12 +165,12 @@ void menu(SDL_Surface *ausgabe_bild, int *field)
 			else
 				continue;
 		}
-
-		SDL_BlitSurface(background,0,ausgabe_bild,0);
-		SDL_BlitSurface(menu_back,&menu_back_pos,ausgabe_bild,&menu_pos);
-		SDL_BlitSurface(menu_back,&area,ausgabe_bild,&ausgabe_area);
-		SDL_BlitSurface(menu_text,0,ausgabe_bild,0);
-		SDL_UpdateRect(ausgabe_bild,0,0,0,0);
+		
+		SDL_RenderCopy(ausgabe_bild, background, 0, 0);
+		SDL_RenderCopy(ausgabe_bild, menu_back, &menu_back_pos, &menu_pos);
+		SDL_RenderCopy(ausgabe_bild, menu_back, &area, &ausgabe_area);
+		SDL_RenderCopy(ausgabe_bild, menu_text, 0, 0);
+		SDL_RenderPresent(ausgabe_bild);
 
 		SDL_WaitEvent(&menu_event);
 
@@ -185,17 +198,15 @@ void menu(SDL_Surface *ausgabe_bild, int *field)
 			}
 		}
 	}
-
-	SDL_FreeSurface(ausgabe_bild);
-	SDL_FreeSurface(background);
-	SDL_FreeSurface(menu_text);
-	SDL_FreeSurface(menu_back);
+	
+	SDL_DestroyTexture(background);
+	SDL_DestroyTexture(menu_text);
+	SDL_DestroyTexture(menu_back);
 }
 
-void hs_menue(SDL_Surface *bild)
+void hs_menue(SDL_Renderer *bild)
 {
-	SDL_Surface *highscore_back;
-	highscore_back=SDL_DisplayFormat(IMG_Load("grafik/info_back.jpg"));
+	SDL_Texture *highscore_back;
 	TTF_Font *copperplate2=TTF_OpenFont("fonts/IndieFlower.ttf",30);
 	TTF_Font *bloody=TTF_OpenFont("fonts/DoubleFeature.ttf",50);
 	TTF_Font *bradley=TTF_OpenFont("fonts/IndieFlower.ttf",30);
@@ -203,13 +214,6 @@ void hs_menue(SDL_Surface *bild)
 
 	SDL_Color black={0,0,0};
 	SDL_Color red={255,0,0};
-
-	SDL_Rect headline_pos={200,60,0,0};
-	SDL_Rect name_pos={120,170,0,0};
-	SDL_Rect punkte_pos={470,170,0,0};
-	SDL_Rect gr_fla_pos={580,170,0,0};
-	SDL_Rect zeit_pos={690,170,0,0};
-	SDL_Rect ende_pos={150,550,0,0};
 
 	hs highscorer[10];
 
@@ -229,15 +233,43 @@ void hs_menue(SDL_Surface *bild)
 		sprintf(gr_fla[i],"%d", highscorer[i].gr_fla);
 		sprintf(zeit[i],"%d", highscorer[i].zeit);
 	}
+	
+	SDL_Surface *surf;
+	surf = SDL_ConvertSurfaceFormat(IMG_Load("grafik/info_back.jpg"), SDL_PIXELFORMAT_RGB24, 0);
+	highscore_back=SDL_CreateTextureFromSurface(bild, surf);
+	SDL_FreeSurface(surf);
 
-	SDL_BlitSurface(highscore_back,0,bild,0);
+	SDL_RenderCopy(bild, highscore_back, 0, 0);
 
-	SDL_BlitSurface(TTF_RenderUTF8_Solid(bloody,"HIGHSCORE",red),0,bild,&headline_pos);
+	surf = TTF_RenderUTF8_Solid(bloody,"HIGHSCORE",red);
+	SDL_Texture *highscore_text=SDL_CreateTextureFromSurface(bild, surf);
+	SDL_Rect headline_pos={200,60,surf->w,surf->h};
+	SDL_FreeSurface(surf);
+	SDL_RenderCopy(bild, highscore_text, 0, &headline_pos);
 
-	SDL_BlitSurface(TTF_RenderUTF8_Solid(bradley,"Name",black),0,bild,&name_pos);
-	SDL_BlitSurface(TTF_RenderUTF8_Solid(bradley,"Punkte",black),0,bild,&punkte_pos);
-	SDL_BlitSurface(TTF_RenderUTF8_Solid(bradley,"Fläche",black),0,bild,&gr_fla_pos);
-	SDL_BlitSurface(TTF_RenderUTF8_Solid(bradley,"Zeit",black),0,bild,&zeit_pos);
+	surf = TTF_RenderUTF8_Solid(bradley,"Name",black);
+	SDL_Texture *name_text=SDL_CreateTextureFromSurface(bild, surf);
+	SDL_Rect name_pos={120,170,surf->w,surf->h};
+	SDL_FreeSurface(surf);
+	SDL_RenderCopy(bild, name_text, 0, &name_pos);
+	
+	surf = TTF_RenderUTF8_Solid(bradley,"Punkte",black);
+	SDL_Texture *punkte_text=SDL_CreateTextureFromSurface(bild, surf);
+	SDL_Rect punkte_pos={470,170,surf->w,surf->h};
+	SDL_FreeSurface(surf);
+	SDL_RenderCopy(bild, punkte_text, 0, &punkte_pos);
+	
+	surf = TTF_RenderUTF8_Solid(bradley,"Fläche",black);
+	SDL_Texture *fla_text=SDL_CreateTextureFromSurface(bild, surf);
+	SDL_Rect gr_fla_pos={580,170,surf->w,surf->h};
+	SDL_FreeSurface(surf);
+	SDL_RenderCopy(bild, fla_text, 0, &gr_fla_pos);
+	
+	surf = TTF_RenderUTF8_Solid(bradley,"Zeit",black);
+	SDL_Texture *zeit_text=SDL_CreateTextureFromSurface(bild, surf);
+	SDL_Rect zeit_pos={690,170,surf->w,surf->h};
+	SDL_FreeSurface(surf);
+	SDL_RenderCopy(bild, zeit_text, 0, &zeit_pos);
 
 	name_pos.x=100, name_pos.y=200;
 	punkte_pos.x=500, punkte_pos.y=200;
@@ -246,18 +278,45 @@ void hs_menue(SDL_Surface *bild)
 
 	for(int j=0;j<10;j++)
 	{
-		SDL_BlitSurface(TTF_RenderUTF8_Solid(comic,highscorer[j].name,black),0,bild,&name_pos);
+		surf = TTF_RenderUTF8_Solid(comic,highscorer[j].name,black);
+		SDL_Texture *name_text=SDL_CreateTextureFromSurface(bild, surf);
+		name_pos.w = surf->w;
+		name_pos.h = surf->h;
+		SDL_FreeSurface(surf);
+		SDL_RenderCopy(bild, name_text, 0, &name_pos);
 		name_pos.y+=z_abst;
-		SDL_BlitSurface(TTF_RenderUTF8_Solid(bradley,punkte[j],black),0,bild,&punkte_pos);
+		
+		surf = TTF_RenderUTF8_Solid(bradley,punkte[j],black);
+		SDL_Texture *punkte_text=SDL_CreateTextureFromSurface(bild, surf);
+		punkte_pos.w = surf->w;
+		punkte_pos.h = surf->h;
+		SDL_FreeSurface(surf);
+		SDL_RenderCopy(bild, punkte_text, 0, &punkte_pos);
 		punkte_pos.y+=z_abst;
-		SDL_BlitSurface(TTF_RenderUTF8_Solid(bradley,gr_fla[j],black),0,bild,&gr_fla_pos);
+		
+		surf = TTF_RenderUTF8_Solid(bradley,gr_fla[j],black);
+		SDL_Texture *gr_fla_text=SDL_CreateTextureFromSurface(bild, surf);
+		gr_fla_pos.w = surf->w;
+		gr_fla_pos.h = surf->h;
+		SDL_FreeSurface(surf);
+		SDL_RenderCopy(bild, gr_fla_text, 0, &gr_fla_pos);
 		gr_fla_pos.y+=z_abst;
-		SDL_BlitSurface(TTF_RenderUTF8_Solid(bradley,zeit[j],black),0,bild,&zeit_pos);
+		
+		surf = TTF_RenderUTF8_Solid(bradley,zeit[j],black);
+		SDL_Texture *zeit_text=SDL_CreateTextureFromSurface(bild, surf);
+		zeit_pos.w = surf->w;
+		zeit_pos.h = surf->h;
+		SDL_FreeSurface(surf);
+		SDL_RenderCopy(bild, zeit_text, 0, &zeit_pos);
 		zeit_pos.y+=z_abst;
 	}
 
-	SDL_BlitSurface(TTF_RenderUTF8_Solid(copperplate2,"<bel. Taste druecken um zurueck zu kehren>",black),0,bild,&ende_pos);
-	SDL_UpdateRect(bild,0,0,0,0);
+	surf = TTF_RenderUTF8_Solid(copperplate2,"<bel. Taste druecken um zurueck zu kehren>",black);
+	SDL_Texture *ende_text=SDL_CreateTextureFromSurface(bild, surf);
+	SDL_Rect ende_pos={150,550,surf->w,surf->h};
+	SDL_FreeSurface(surf);
+	SDL_RenderCopy(bild, ende_text, 0, &ende_pos);
+	SDL_RenderPresent(bild);
 
 	SDL_Event highscore_event;
 
@@ -268,66 +327,123 @@ void hs_menue(SDL_Surface *bild)
 	TTF_CloseFont(bradley);
 	TTF_CloseFont(comic);
 
-	SDL_FreeSurface(bild);
-	SDL_FreeSurface(highscore_back);
+	SDL_DestroyTexture(highscore_back);
+	SDL_DestroyTexture(highscore_text);
 }
 
-void hardware_info(SDL_Surface *bild)
+void hardware_info(SDL_Renderer *bild)
 {
 	SDL_Surface *about;
-	const SDL_VideoInfo *video_hardware;
+	SDL_RendererInfo* info = calloc(1, sizeof(SDL_RendererInfo));
+	SDL_SysWMinfo *wm_info = calloc(1, sizeof(SDL_SysWMinfo));;
 	SDL_Color black={0,0,0};
 	TTF_Font *arial_bold=TTF_OpenFont("fonts/SourceSansPro-Bold.ttf",30);
 	TTF_Font *arial=TTF_OpenFont("fonts/SourceSansPro-Regular.ttf",20);
-	about=SDL_DisplayFormat(IMG_Load("grafik/info_back.jpg"));
-	char text_hardware[11][100];
-	char t_h2[11][100];
+	about=SDL_ConvertSurfaceFormat(IMG_Load("grafik/info_back.jpg"), SDL_PIXELFORMAT_RGB24, 0);
+	char text_hardware[12][100];
+	char t_h2[12][100];
 	SDL_Rect headline_pos={50,25};
 	SDL_Rect text_pos={50,100,0,0};
-	SDL_Rect t_h2_pos={650,100,0,0};
+	SDL_Rect t_h2_pos={600,100,0,0};
 	SDL_Rect ende_pos={300,500,0,0};
+	
+	memset(text_hardware, 0, sizeof(text_hardware));
+	memset(t_h2, 0, sizeof(t_h2));
 
-	video_hardware=SDL_GetVideoInfo();
-
-	SDL_ShowCursor(0);
-
-	strcpy(text_hardware[0],"Hardwareoberflächen:");
-	strcpy(text_hardware[1],"Windowmanager:");
-	strcpy(text_hardware[2],"Beschleunigung von Hard- zu Hardware Übertragungen:");
-	strcpy(text_hardware[3],"Beschleunigung von Hard- zu Hardware Transparetübertragungen:");
-	strcpy(text_hardware[4],"Beschleunigung von Hard- zu Hardware Alphakanalübertragungen:");
-	strcpy(text_hardware[5],"Beschleunigung von Soft- zu Hardware Übertragungen:");
-	strcpy(text_hardware[6],"Beschleunigung von Soft- zu Hardware Tranzparentübertragungen:");
-	strcpy(text_hardware[7],"Beschleunigung von Soft- zu Hardware Alphakanalübertragungen:");
-	strcpy(text_hardware[8],"Beschleunigung von Flächenfüllungen:");
-	strcpy(text_hardware[9],"Verfügbarer Videospeicher:");
-	strcpy(text_hardware[10],"Farben:");
-
-	strcpy(t_h2[0],video_hardware->hw_available ? "Ja" : "Nein");
-	strcpy(t_h2[1],video_hardware->wm_available ? "Ja" : "Nein");
-	strcpy(t_h2[2],video_hardware->blit_hw ? "Ja" : "Nein");
-	strcpy(t_h2[3],video_hardware->blit_hw_CC ? "Ja" : "Nein");
-	strcpy(t_h2[4],video_hardware->blit_hw_A ? "Ja" : "Nein");
-	strcpy(t_h2[5],video_hardware->blit_sw ? "Ja" : "Nein");
-	strcpy(t_h2[6],video_hardware->blit_sw_CC ? "Ja" : "Nein");
-	strcpy(t_h2[7],video_hardware->blit_sw_A ? "Ja" : "Nein");
-	strcpy(t_h2[8],video_hardware->blit_fill ? "Ja" : "Nein");
-	sprintf(t_h2[9], "%d", video_hardware->video_mem);
-	strcat(t_h2[9]," KB");
-	sprintf(t_h2[10], "%d", video_hardware->vfmt->BitsPerPixel);
-	strcat(t_h2[10]," Bit");
-
-	SDL_BlitSurface(about,0,bild,0);
-	SDL_BlitSurface(TTF_RenderUTF8_Solid(arial_bold,"Informationen über Videohardware:",black),0,bild,&headline_pos);
-	for(int j=0;j<11;j++)
+	SDL_GetRendererInfo(bild, info);
+	SDL_VERSION(&(wm_info->version));
+	SDL_GetWindowWMInfo(window, wm_info);
+	
+	const char *subsystem;
+	switch(wm_info->subsystem)
 	{
-		SDL_BlitSurface(TTF_RenderUTF8_Solid(arial,text_hardware[j],black),0,bild,&text_pos);
-		SDL_BlitSurface(TTF_RenderUTF8_Solid(arial,t_h2[j],black),0,bild,&t_h2_pos);
+	case SDL_SYSWM_UNKNOWN:   subsystem = "unknown";            break;
+	case SDL_SYSWM_WINDOWS:   subsystem = "Microsoft Windows";  break;
+	case SDL_SYSWM_X11:       subsystem = "X Window System";    break;
+	case SDL_SYSWM_DIRECTFB:  subsystem = "DirectFB";           break;
+	case SDL_SYSWM_COCOA:     subsystem = "Apple OS X";         break;
+	case SDL_SYSWM_UIKIT:     subsystem = "UIKit";              break;
+#if SDL_VERSION_ATLEAST(2, 0, 2)
+	case SDL_SYSWM_WAYLAND:   subsystem = "Wayland";            break;
+	case SDL_SYSWM_MIR:       subsystem = "Mir";                break;
+#endif
+#if SDL_VERSION_ATLEAST(2, 0, 3)
+	case SDL_SYSWM_WINRT:     subsystem = "WinRT";              break;
+#endif
+#if SDL_VERSION_ATLEAST(2, 0, 4)
+	case SDL_SYSWM_ANDROID:   subsystem = "Android";            break;
+#endif
+#if SDL_VERSION_ATLEAST(2, 0, 5)
+	case SDL_SYSWM_VIVANTE:   subsystem = "Vivante";            break;
+#endif
+	case SDL_SYSWM_OS2:       subsystem = "OS/2";               break;
+	}
+	
+	SDL_ShowCursor(0);
+	
+	strcpy(text_hardware[0],"Platform:");
+	strcpy(text_hardware[1],"Windowmanager:");
+	strcpy(text_hardware[2],"Renderer:");
+	strcpy(text_hardware[3],"SDL version:");
+	strcpy(text_hardware[4],"Software-Fallback:");
+	strcpy(text_hardware[5],"Hardwarebeschleunigung:");
+	strcpy(text_hardware[6],"Synchronisiert mit Bildwiederholfrequenz:");
+	strcpy(text_hardware[7],"Unterstützt Wiedergabe auf Textur:");
+	strcpy(text_hardware[8],"Anzahl Textur formate:");
+	strcpy(text_hardware[9],"Maximale Textur Breite:");
+	strcpy(text_hardware[10],"Maximale Textur Höhe:");
+	strcpy(text_hardware[11],"Arbeitsspeicher (MB):");
+	
+	strcpy(t_h2[0],SDL_GetPlatform());
+	strcpy(t_h2[1],subsystem);
+	strcpy(t_h2[2],info->name);
+	sprintf(t_h2[3],"%d.%d.%d", wm_info->version.major, wm_info->version.minor, wm_info->version.patch);
+	strcpy(t_h2[4],info->flags & SDL_RENDERER_SOFTWARE ? "Ja" : "Nein");
+	strcpy(t_h2[5],info->flags & SDL_RENDERER_ACCELERATED ? "Ja" : "Nein");
+	strcpy(t_h2[6],info->flags & SDL_RENDERER_PRESENTVSYNC ? "Ja" : "Nein");
+	strcpy(t_h2[7],info->flags & SDL_RENDERER_TARGETTEXTURE ? "Ja" : "Nein");
+	sprintf(t_h2[8],"%d",info->num_texture_formats);
+	sprintf(t_h2[9],"%d",info->max_texture_width);
+	sprintf(t_h2[10],"%d",info->max_texture_height);
+	sprintf(t_h2[11],"%d",SDL_GetSystemRAM());
+
+	SDL_Texture *about_text=SDL_CreateTextureFromSurface(bild, about);
+	SDL_RenderCopy(bild, about_text, 0, 0);
+	SDL_Surface *surf;
+	surf = TTF_RenderUTF8_Solid(arial_bold,"Informationen über Videohardware:",black);
+	SDL_Texture *headline=SDL_CreateTextureFromSurface(bild, surf);
+	headline_pos.w = surf->w;
+	headline_pos.h = surf->h;
+	SDL_FreeSurface(surf);
+	SDL_RenderCopy(bild, headline, 0, &headline_pos);
+	for(int j=0;j<12;j++)
+	{
+		surf = TTF_RenderUTF8_Solid(arial,text_hardware[j],black);
+		if(surf!=0) {
+			SDL_Texture *text=SDL_CreateTextureFromSurface(bild, surf);
+			text_pos.w = surf->w;
+			text_pos.h = surf->h;
+			SDL_FreeSurface(surf);
+			SDL_RenderCopy(bild, text, 0, &text_pos);
+		}
+		surf = TTF_RenderUTF8_Solid(arial,t_h2[j],black);
+		if(surf!=0) {
+			SDL_Texture *t_h2=SDL_CreateTextureFromSurface(bild, surf);
+			t_h2_pos.w = surf->w;
+			t_h2_pos.h = surf->h;
+			SDL_FreeSurface(surf);
+			SDL_RenderCopy(bild, t_h2, 0, &t_h2_pos);
+		}
 		text_pos.y+=30;
 		t_h2_pos.y+=30;
 	}
-	SDL_BlitSurface(TTF_RenderUTF8_Solid(arial,"<beliebige Taste>",black),0,bild,&ende_pos);
-	SDL_UpdateRect(bild,0,0,0,0);
+	surf = TTF_RenderUTF8_Solid(arial,"<beliebige Taste>",black);
+	SDL_Texture *ende=SDL_CreateTextureFromSurface(bild, surf);
+	ende_pos.w = surf->w;
+	ende_pos.h = surf->h;
+	SDL_FreeSurface(surf);
+	SDL_RenderCopy(bild, ende, 0, &ende_pos);
+	SDL_RenderPresent(bild);
 
 	SDL_Event about_event;
 
@@ -337,18 +453,15 @@ void hardware_info(SDL_Surface *bild)
 	TTF_CloseFont(arial);
 
 	SDL_FreeSurface(about);
-	SDL_FreeSurface(bild);
 }
 
-void free_game(SDL_Surface *bildschirm)
+void free_game(SDL_Renderer *bildschirm)
 {
 	SDL_ShowCursor(SDL_ENABLE);
 	setting game_s;
 	game_s=game_setting();
 
-	game(game_s);
-
-	SDL_FreeSurface(bildschirm);
+	game(bildschirm, game_s);
 }
 
 setting game_setting()
@@ -360,9 +473,8 @@ setting game_setting()
 	return standart;
 }
 
-void game(setting game_s)
+void game(SDL_Renderer *bildschirm, setting game_s)
 {
-	SDL_Surface *bildschirm;
 	SDL_Surface *hintergrund;
 	int matrix[9][9];
 	long time1, time2, time_dif, time_gr2=0, time_gre;
@@ -374,8 +486,7 @@ void game(setting game_s)
 
 	SDL_Event event_m;
 
-	bildschirm=SDL_GetVideoSurface();
-	hintergrund=SDL_DisplayFormat(IMG_Load("grafik/hintergrund.jpg"));
+	hintergrund=SDL_ConvertSurfaceFormat(IMG_Load("grafik/hintergrund.jpg"), SDL_PIXELFORMAT_RGB24, 0);
 
 	matrix_pos.x=75;
 	matrix_pos.y=75;
@@ -384,7 +495,8 @@ void game(setting game_s)
 
 	random_matrix(matrix);
 
-	SDL_BlitSurface(hintergrund,0,bildschirm,0);
+	SDL_Texture *hintergrund_txt=SDL_CreateTextureFromSurface(bildschirm, hintergrund);
+	SDL_RenderCopy(bildschirm, hintergrund_txt, 0, 0);
 
 	draw_arrows(matrix_pos);
 
@@ -402,7 +514,7 @@ void game(setting game_s)
 			break;
 		case SDL_MOUSEBUTTONUP:
 			klicks_ges++;
-			SDL_BlitSurface(hintergrund,&matrix_pos,bildschirm,&matrix_pos);
+			SDL_RenderCopy(bildschirm, hintergrund_txt, &matrix_pos, &matrix_pos);
 
 			if(event_m.button.x>=matrix_pos.x && event_m.button.x<=matrix_pos.w+matrix_pos.x
 				&& event_m.button.y>=matrix_pos.y && event_m.button.y<=matrix_pos.h+matrix_pos.y)
@@ -453,7 +565,6 @@ void game(setting game_s)
 
 	stat_menue(time_dif,time_gre,klicks_ges,klicks_fl,klicks_pf,gr_anzahl);
 
-	SDL_FreeSurface(bildschirm);
 	SDL_FreeSurface(hintergrund);
 }
 
@@ -471,16 +582,17 @@ void random_matrix(int matrix[9][9])
 
 void draw_matrix(int matrix[9][9], SDL_Rect matrix_pos, char* piece_set_path)
 {
-	SDL_Surface *bildschirm;
+	SDL_Renderer *bildschirm;
 	SDL_Surface *pieces;
 
-	SDL_Rect piece_pos;
+	SDL_Rect piece_pos = {.w=50, .h=50};
 	SDL_Rect piece_ko;
 
-	bildschirm=SDL_GetVideoSurface();
-	pieces=SDL_DisplayFormat(IMG_Load(piece_set_path));
-
-	SDL_SetColorKey(pieces,SDL_SRCCOLORKEY | SDL_RLEACCEL,SDL_MapRGB(pieces->format,255,0,255));
+	bildschirm=SDL_GetRenderer(window);
+	pieces=SDL_ConvertSurfaceFormat(IMG_Load(piece_set_path), SDL_PIXELFORMAT_RGB24, 0);
+	SDL_SetColorKey(pieces,SDL_TRUE | SDL_RLEACCEL,SDL_MapRGB(pieces->format,255,0,255));
+	SDL_Texture *pieces_txt=SDL_CreateTextureFromSurface(bildschirm, pieces);
+	SDL_FreeSurface(pieces);
 
 	for(int i=0;i<=8;i++)
 	{
@@ -494,27 +606,25 @@ void draw_matrix(int matrix[9][9], SDL_Rect matrix_pos, char* piece_set_path)
 			piece_ko.w=((matrix[i][j]+1)*50)-piece_ko.x;
 			piece_ko.h=50;
 
-			SDL_BlitSurface(pieces,&piece_ko,bildschirm,&piece_pos);
+			SDL_RenderCopy(bildschirm, pieces_txt, &piece_ko, &piece_pos);
 		}
 	}
 
-	SDL_UpdateRect(bildschirm,0,0,0,0);
-
-	SDL_FreeSurface(bildschirm);
-	SDL_FreeSurface(pieces);
+	SDL_RenderPresent(bildschirm);
 }
 
 void draw_arrows(SDL_Rect matrix_pos)
 {
-	SDL_Surface *bildschirm;
+	SDL_Renderer *bildschirm;
 	SDL_Surface *direction_arrows;
 
 	SDL_Rect pfeil_ko;
-	SDL_Rect pfeil_pos;
+	SDL_Rect pfeil_pos = {.w=50, .h=50};
 
-	bildschirm=SDL_GetVideoSurface();
-	direction_arrows=SDL_DisplayFormat(IMG_Load("grafik/pfeile.gif"));
-	SDL_SetColorKey(direction_arrows,SDL_RLEACCEL | SDL_SRCCOLORKEY,SDL_MapRGB(direction_arrows->format,255,255,255));
+	bildschirm=SDL_GetRenderer(window);
+	direction_arrows=SDL_ConvertSurfaceFormat(IMG_Load("grafik/pfeile.gif"), SDL_PIXELFORMAT_RGB24, 0);
+	SDL_SetColorKey(direction_arrows,SDL_RLEACCEL | SDL_TRUE,SDL_MapRGB(direction_arrows->format,255,255,255));
+	SDL_Texture *direction_arrows_txt=SDL_CreateTextureFromSurface(bildschirm, direction_arrows);
 
 	pfeil_ko.x=0;
 	pfeil_ko.y=0;
@@ -526,7 +636,7 @@ void draw_arrows(SDL_Rect matrix_pos)
 		pfeil_pos.x=matrix_pos.x+i*50;
 		pfeil_pos.y=matrix_pos.y-50;
 
-		SDL_BlitSurface(direction_arrows,&pfeil_ko,bildschirm,&pfeil_pos);
+		SDL_RenderCopy(bildschirm, direction_arrows_txt, &pfeil_ko, &pfeil_pos);
 	}
 
 	pfeil_ko.x=50;
@@ -539,7 +649,7 @@ void draw_arrows(SDL_Rect matrix_pos)
 		pfeil_pos.x=matrix_pos.x+matrix_pos.w;
 		pfeil_pos.y=matrix_pos.y+j*50;
 
-		SDL_BlitSurface(direction_arrows,&pfeil_ko,bildschirm,&pfeil_pos);
+		SDL_RenderCopy(bildschirm, direction_arrows_txt, &pfeil_ko, &pfeil_pos);
 	}
 
 	pfeil_ko.x=50;
@@ -552,7 +662,7 @@ void draw_arrows(SDL_Rect matrix_pos)
 		pfeil_pos.x=matrix_pos.x+k*50;
 		pfeil_pos.y=matrix_pos.y+matrix_pos.h;
 
-		SDL_BlitSurface(direction_arrows,&pfeil_ko,bildschirm,&pfeil_pos);
+		SDL_RenderCopy(bildschirm, direction_arrows_txt, &pfeil_ko, &pfeil_pos);
 	}
 
 	pfeil_ko.x=0;
@@ -565,10 +675,9 @@ void draw_arrows(SDL_Rect matrix_pos)
 		pfeil_pos.x=matrix_pos.x-50;
 		pfeil_pos.y=matrix_pos.y+l*50;
 
-		SDL_BlitSurface(direction_arrows,&pfeil_ko,bildschirm,&pfeil_pos);
+		SDL_RenderCopy(bildschirm, direction_arrows_txt, &pfeil_ko, &pfeil_pos);
 	}
 
-	SDL_FreeSurface(bildschirm);
 	SDL_FreeSurface(direction_arrows);
 }
 
@@ -720,7 +829,7 @@ int whether_gameend(int m[9][9])
 
 void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_anz)
 {
-	SDL_Surface *bild=SDL_GetVideoSurface();
+	SDL_Renderer *bild=SDL_GetRenderer(window);
 	SDL_Surface *stat_back=IMG_Load("grafik/stat_back.jpg");
 
 	TTF_Font *copperplate=TTF_OpenFont("fonts/IndieFlower.ttf",50);
@@ -792,9 +901,17 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 	strcpy(t_stat2[1],"Klicks pro Sekunde:");
 	strcpy(t_stat2[2],"Zeit für gr. Fläche:");
 
-	SDL_BlitSurface(stat_back,0,bild,0);
+	SDL_Texture *stat_back_txt=SDL_CreateTextureFromSurface(bild, stat_back);
+	SDL_FreeSurface(stat_back);
+	SDL_RenderCopy(bild, stat_back_txt, 0, 0);
 
-	SDL_BlitSurface(TTF_RenderUTF8_Solid(copperplate,"SPIELENDE",black),0,bild,&headline);
+	SDL_Surface *surf;
+	surf = TTF_RenderUTF8_Solid(copperplate,"SPIELENDE",black);
+	SDL_Texture *headline_txt=SDL_CreateTextureFromSurface(bild, surf);
+	headline.w = surf->w;
+	headline.h = surf->h;
+	SDL_FreeSurface(surf);
+	SDL_RenderCopy(bild, headline_txt, 0, &headline);
 
 	hs_in.punkte=p;
 	hs_in.gr_fla=max_anz;
@@ -804,7 +921,12 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 
 	if(pos!=0)
 	{
-		SDL_BlitSurface(TTF_RenderUTF8_Solid(copperplate2,"Name: ",black),0,bild,&name_pos);
+		surf = TTF_RenderUTF8_Solid(copperplate2,"Name: ",black);
+		SDL_Texture *name=SDL_CreateTextureFromSurface(bild, surf);
+		name_pos.w = surf->w;
+		name_pos.h = surf->h;
+		SDL_FreeSurface(surf);
+		SDL_RenderCopy(bild, name, 0, &name_pos);
 		input_name(bild, t_name);
 
 		strcpy(hs_in.name,t_name);
@@ -821,43 +943,80 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 		strcpy(t_pos,"Ihre Leistung war nicht ausreichend für die Highscore");
 	}
 
-	SDL_BlitSurface(TTF_RenderUTF8_Solid(copperplate2,t_pos,black),0,bild,&pos_pos);
+	surf = TTF_RenderUTF8_Solid(copperplate2,t_pos,black);
+	SDL_Texture *pos_txt=SDL_CreateTextureFromSurface(bild, surf);
+	pos_pos.w = surf->w;
+	pos_pos.h = surf->h;
+	SDL_FreeSurface(surf);
+	SDL_RenderCopy(bild, pos_txt, 0, &pos_pos);
 
-	SDL_BlitSurface(TTF_RenderUTF8_Solid(copperplate2,t_zeit,black),0,bild,&time_pos);
-	SDL_BlitSurface(TTF_RenderUTF8_Solid(copperplate2,t_punkte,black),0,bild,&punkte_pos);
+	surf = TTF_RenderUTF8_Solid(copperplate2,t_zeit,black);
+	SDL_Texture *time_txt=SDL_CreateTextureFromSurface(bild, surf);
+	time_pos.w = surf->w;
+	time_pos.h = surf->h;
+	SDL_FreeSurface(surf);
+	SDL_RenderCopy(bild, time_txt, 0, &time_pos);
+	surf = TTF_RenderUTF8_Solid(copperplate2,t_punkte,black);
+	SDL_Texture *punkte=SDL_CreateTextureFromSurface(bild, surf);
+	punkte_pos.w = surf->w;
+	punkte_pos.h = surf->h;
+	SDL_FreeSurface(surf);
+	SDL_RenderCopy(bild, punkte, 0, &punkte_pos);
 
 	for(int i=0;i<4;i++)
 	{
-		SDL_BlitSurface(TTF_RenderUTF8_Solid(copperplate2,t_stat1[i],black),0,bild,&stat1_pos);
+		surf = TTF_RenderUTF8_Solid(copperplate2,t_stat1[i],black);
+		SDL_Texture *name=SDL_CreateTextureFromSurface(bild, surf);
+		stat1_pos.w = surf->w;
+		stat1_pos.h = surf->h;
+		SDL_FreeSurface(surf);
+		SDL_RenderCopy(bild, name, 0, &stat1_pos);
 		stat1_pos.y+=30;
 		if(i==3) continue;
-		SDL_BlitSurface(TTF_RenderUTF8_Solid(copperplate2,t_k[i],black),0,bild,&k_pos);
+		surf = TTF_RenderUTF8_Solid(copperplate2,t_k[i],black);
+		SDL_Texture *k=SDL_CreateTextureFromSurface(bild, surf);
+		k_pos.w = surf->w;
+		k_pos.h = surf->h;
+		SDL_FreeSurface(surf);
+		SDL_RenderCopy(bild, k, 0, &k_pos);
 		k_pos.y+=30;
 	}
 
 	for(int i=0;i<3;i++)
 	{
-		SDL_BlitSurface(TTF_RenderUTF8_Solid(copperplate2,t_stat2[i],black),0,bild,&stat2_pos);
+		surf = TTF_RenderUTF8_Solid(copperplate2,t_stat2[i],black);
+		SDL_Texture *stat2=SDL_CreateTextureFromSurface(bild, surf);
+		stat2_pos.w = surf->w;
+		stat2_pos.h = surf->h;
+		SDL_FreeSurface(surf);
+		SDL_RenderCopy(bild, stat2, 0, &stat2_pos);
 		stat2_pos.y+=30;
-		SDL_BlitSurface(TTF_RenderUTF8_Solid(copperplate2,t_rest[i],black),0,bild,&rest_pos);
+		surf = TTF_RenderUTF8_Solid(copperplate2,t_rest[i],black);
+		SDL_Texture *rest=SDL_CreateTextureFromSurface(bild, surf);
+		rest_pos.w = surf->w;
+		rest_pos.h = surf->h;
+		SDL_FreeSurface(surf);
+		SDL_RenderCopy(bild, rest, 0, &rest_pos);
 		rest_pos.y+=30;
 	}
 
-	SDL_BlitSurface(TTF_RenderUTF8_Solid(copperplate2,"<bel. Taste druecken um zurueck zu kehren>",black),0,bild,&ende_pos);
-	SDL_UpdateRect(bild,0,0,0,0);
+	surf = TTF_RenderUTF8_Solid(copperplate2,"<bel. Taste druecken um zurueck zu kehren>",black);
+	SDL_Texture *ende=SDL_CreateTextureFromSurface(bild, surf);
+	ende_pos.w = surf->w;
+	ende_pos.h = surf->h;
+	SDL_FreeSurface(surf);
+	SDL_RenderCopy(bild, ende, 0, &ende_pos);
+	SDL_RenderPresent(bild);
 
 	while(SDL_WaitEvent(&stat_event) && stat_event.type!=SDL_KEYDOWN);
 
 	TTF_CloseFont(copperplate);
 	TTF_CloseFont(copperplate2);
-
-	SDL_FreeSurface(bild);
-	SDL_FreeSurface(stat_back);
 }
 
-void input_name(SDL_Surface *prev_bild, char *t_name)
+void input_name(SDL_Renderer *prev_bild, char *t_name)
 {
-	SDL_Surface *bild=SDL_GetVideoSurface();
+	SDL_Renderer *bild=SDL_GetRenderer(window);
 	SDL_Event input_event;
 	TTF_Font *copperplate2=TTF_OpenFont("fonts/PermanentMarker.ttf",30);
 	SDL_Rect name_pos={205,110,0,0};
@@ -865,64 +1024,72 @@ void input_name(SDL_Surface *prev_bild, char *t_name)
 
 	int i=0;
 	int taste=0;
-
-	char *temp_data="grafik/input.bmp";
-
-	SDL_SaveBMP(prev_bild,temp_data);
-	prev_bild=SDL_LoadBMP(temp_data);
-	remove(temp_data);
+	
+	SDL_Texture *stat_back=IMG_LoadTexture(bild, "grafik/stat_back.jpg");
 
 	memset(t_name, 0, 30);
+	
+	SDL_Rect max_name = {.x=name_pos.x, .y=name_pos.y};
+	
+	SDL_RenderPresent(bild);
 
 	do
 	{
 		if(SDL_WaitEvent(&input_event))
 		{
-			SDL_BlitSurface(prev_bild,0,bild,0);
-
-			SDL_BlitSurface(TTF_RenderUTF8_Solid(copperplate2,t_name,black),0,bild,&name_pos);
-
-			SDL_UpdateRect(bild,0,0,0,0);
-
-			if(input_event.key.type==SDL_KEYDOWN)
+			if(input_event.key.state==SDL_PRESSED) {
 				taste=input_event.key.keysym.sym;
-		}
-
-		if((taste>=SDLK_0 && taste<=SDLK_9) || (taste>=SDLK_a && taste<=SDLK_z)) // || taste==SDLK_SPACE)
-		{
-			if(taste!=32)
-			{
-				if(taste=='z')
-					taste='y';
-				else if(taste=='y')
-					taste='z';
-
-				t_name[i]=(char)taste-32;
+			
+				if((taste>=SDLK_0 && taste<=SDLK_9) || (taste>=SDLK_a && taste<=SDLK_z)) // || taste==SDLK_SPACE)
+				{
+					if(taste!=32)
+					{
+						if(taste=='z')
+							taste='y';
+						else if(taste=='y')
+							taste='z';
+						
+						t_name[i]=(char)taste-32;
+					}
+					else
+						t_name[i]=(char)taste;
+					i++;
+					t_name[i]='\0';
+					taste=0;
+					if(i==20)
+					{
+						i--;
+						t_name[i]='\0';
+					}
+				}
+				else if(taste==SDLK_BACKSPACE)
+				{
+					i--;
+					if(i<0) i=0;
+					t_name[i]='\0';
+					taste=0;
+				}
+				
+				SDL_RenderCopy(bild, stat_back, &max_name, &max_name);
+				
+				SDL_Surface *surf = TTF_RenderUTF8_Solid(copperplate2,t_name,black);
+				if(surf!=0) {
+					SDL_Texture *name=SDL_CreateTextureFromSurface(bild, surf);
+					name_pos.w = surf->w;
+					name_pos.h = surf->h;
+					if(name_pos.w>max_name.w) max_name.w = name_pos.w;
+					if(name_pos.h>max_name.h) max_name.h = name_pos.h;
+					SDL_FreeSurface(surf);
+					SDL_RenderCopy(bild, name, 0, &name_pos);
+				}
+				
+				SDL_RenderPresent(bild);
+				SDL_Delay(1);
 			}
-			else
-				t_name[i]=(char)taste;
-			i++;
-			t_name[i]='\0';
-			taste=0;
-			if(i==20)
-			{
-				i--;
-				t_name[i]='\0';
-			}
 		}
-		else if(taste==SDLK_BACKSPACE)
-		{
-			i--;
-			t_name[i]='\0';
-			taste=0;
-		}
-
 	}while(taste!=SDLK_RETURN);
 
 	TTF_CloseFont(copperplate2);
-
-	SDL_FreeSurface(bild);
-	SDL_FreeSurface(prev_bild);
 }
 
 void write_hs(hs *hs_out)
@@ -959,13 +1126,9 @@ void read_hs(hs *hs_in)
 	fclose(fp);
 }
 
-void hilfe_menue()
+void hilfe_menue(SDL_Renderer *bild)
 {
-	SDL_Surface *bild=SDL_GetVideoSurface();
-	SDL_Surface *hilfe_back=IMG_Load("grafik/info_back.jpg");
-
 	SDL_Rect hilfe_pos={50,50,0,0};
-	SDL_Rect ende_pos={130,550,0,0};
 
 	SDL_Event hilfe_event;
 
@@ -986,21 +1149,36 @@ void hilfe_menue()
 	}
 	fclose(fp);
 
-	SDL_BlitSurface(hilfe_back,0,bild,0);
+	SDL_Surface *surf;
+	surf=IMG_Load("grafik/info_back.jpg");
+	SDL_Texture *hilfe_back=SDL_CreateTextureFromSurface(bild, surf);
+	SDL_FreeSurface(surf);
+	SDL_RenderCopy(bild, hilfe_back, 0, 0);
+
 	for(int j=0;j<15;j++)
 	{
-		SDL_BlitSurface(TTF_RenderUTF8_Solid(courier,hilfe[j],black),0,bild,&hilfe_pos);
+		surf=TTF_RenderUTF8_Solid(courier,hilfe[j],black);
+		if(surf!=0) {
+		SDL_Texture *hilfe_text=SDL_CreateTextureFromSurface(bild, surf);
+		hilfe_pos.w = surf->w;
+		hilfe_pos.h = surf->h;
+		SDL_FreeSurface(surf);
+		SDL_RenderCopy(bild, hilfe_text, 0, &hilfe_pos);
+		}
 		hilfe_pos.y+=25;
 	}
-	SDL_BlitSurface(TTF_RenderUTF8_Solid(courier,"<belibige Taste drücken um zurück zu kehren>",black),0,bild,&ende_pos);
-	SDL_UpdateRect(bild,0,0,0,0);
+	surf=TTF_RenderUTF8_Solid(courier,"<belibige Taste drücken um zurück zu kehren>",black);
+	SDL_Texture *ende_text=SDL_CreateTextureFromSurface(bild, surf);
+	SDL_Rect ende_pos={130,550,surf->w,surf->h};
+	SDL_FreeSurface(surf);
+	SDL_RenderCopy(bild, ende_text, 0, &ende_pos);
+	SDL_RenderPresent(bild);
 
 	while(SDL_WaitEvent(&hilfe_event) && hilfe_event.type!=SDL_KEYDOWN);
 
 	TTF_CloseFont(courier);
 
-	SDL_FreeSurface(bild);
-	SDL_FreeSurface(hilfe_back);
+	SDL_DestroyTexture(hilfe_back);
 }
 
 void in_hs(hs hs_input)
