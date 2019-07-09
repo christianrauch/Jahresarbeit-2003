@@ -196,10 +196,10 @@ void hs_menue(SDL_Surface *bild)
 {
 	SDL_Surface *highscore_back;
 	highscore_back=SDL_DisplayFormat(IMG_Load("grafik/info_back.jpg"));
-	TTF_Font *copperplate2=TTF_OpenFont("fonts/copperplate.ttf",20);
-	TTF_Font *bloody=TTF_OpenFont("fonts/bloodfea.ttf",50);
-	TTF_Font *bradley=TTF_OpenFont("fonts/bradley_hand.ttf",30);
-	TTF_Font *comic=TTF_OpenFont("fonts/comic.ttf",20);
+	TTF_Font *copperplate2=TTF_OpenFont("fonts/IndieFlower.ttf",30);
+	TTF_Font *bloody=TTF_OpenFont("fonts/DoubleFeature.ttf",50);
+	TTF_Font *bradley=TTF_OpenFont("fonts/IndieFlower.ttf",30);
+	TTF_Font *comic=TTF_OpenFont("fonts/PermanentMarker.ttf",20);
 
 	SDL_Color black={0,0,0};
 	SDL_Color red={255,0,0};
@@ -277,8 +277,8 @@ void hardware_info(SDL_Surface *bild)
 	SDL_Surface *about;
 	const SDL_VideoInfo *video_hardware;
 	SDL_Color black={0,0,0};
-	TTF_Font *arial_bold=TTF_OpenFont("fonts/arial_bold.ttf",30);
-	TTF_Font *arial=TTF_OpenFont("fonts/arial.ttf",20);
+	TTF_Font *arial_bold=TTF_OpenFont("fonts/SourceSansPro-Bold.ttf",30);
+	TTF_Font *arial=TTF_OpenFont("fonts/SourceSansPro-Regular.ttf",20);
 	about=SDL_DisplayFormat(IMG_Load("grafik/info_back.jpg"));
 	char text_hardware[11][100];
 	char t_h2[11][100];
@@ -723,8 +723,8 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 	SDL_Surface *bild=SDL_GetVideoSurface();
 	SDL_Surface *stat_back=IMG_Load("grafik/stat_back.jpg");
 
-	TTF_Font *copperplate=TTF_OpenFont("fonts/copperplate.ttf",50);
-	TTF_Font *copperplate2=TTF_OpenFont("fonts/copperplate.ttf",20);
+	TTF_Font *copperplate=TTF_OpenFont("fonts/IndieFlower.ttf",50);
+	TTF_Font *copperplate2=TTF_OpenFont("fonts/IndieFlower.ttf",30);
 
 	SDL_Rect headline={120,50,0,0};
 	SDL_Rect name_pos={130,110,0,0};
@@ -859,7 +859,7 @@ void input_name(SDL_Surface *prev_bild, char *t_name)
 {
 	SDL_Surface *bild=SDL_GetVideoSurface();
 	SDL_Event input_event;
-	TTF_Font *copperplate2=TTF_OpenFont("fonts/copperplate.ttf",20);
+	TTF_Font *copperplate2=TTF_OpenFont("fonts/PermanentMarker.ttf",20);
 	SDL_Rect name_pos={202,110,0,0};
 	SDL_Color black={0,0,0};
 
@@ -969,7 +969,7 @@ void hilfe_menue()
 
 	SDL_Event hilfe_event;
 
-	TTF_Font *courier=TTF_OpenFont("fonts/courier_fett.ttf",20);
+	TTF_Font *courier=TTF_OpenFont("fonts/SourceCodePro-Bold.ttf",20);
 
 	SDL_Color black={0,0,0};
 
