@@ -141,7 +141,7 @@ void menu(SDL_Renderer *ausgabe_bild, int *field)
 	menu_pos.x=250;
 	menu_pos.y=150;
 	menu_pos.w=300;
-	menu_pos.h=350;
+	menu_pos.h=50;
 
 	area.x=0;
 	area.w=300;
@@ -153,6 +153,8 @@ void menu(SDL_Renderer *ausgabe_bild, int *field)
 	menu_back_pos.h=50;
 
 	ausgabe_area.x=menu_pos.x;
+	ausgabe_area.w=300;
+	ausgabe_area.h=50;
 
 	int running=1;
 	while(running)
@@ -167,12 +169,6 @@ void menu(SDL_Renderer *ausgabe_bild, int *field)
 			else
 				continue;
 		}
-
-//		SDL_BlitSurface(background,0,ausgabe_bild,0);
-//		SDL_BlitSurface(menu_back,&menu_back_pos,ausgabe_bild,&menu_pos);
-//		SDL_BlitSurface(menu_back,&area,ausgabe_bild,&ausgabe_area);
-//		SDL_BlitSurface(menu_text,0,ausgabe_bild,0);
-//		SDL_UpdateRect(ausgabe_bild,0,0,0,0);
 		
 		SDL_RenderCopy(ausgabe_bild, background, 0, 0);
 		SDL_RenderCopy(ausgabe_bild, menu_back, &menu_back_pos, &menu_pos);
@@ -206,11 +202,6 @@ void menu(SDL_Renderer *ausgabe_bild, int *field)
 			}
 		}
 	}
-
-//	SDL_FreeSurface(ausgabe_bild);
-//	SDL_FreeSurface(background);
-//	SDL_FreeSurface(menu_text);
-//	SDL_FreeSurface(menu_back);
 	
 	SDL_DestroyTexture(background);
 	SDL_DestroyTexture(menu_text);
