@@ -120,10 +120,18 @@ void menu(SDL_Renderer *ausgabe_bild, int *field)
 
 	SDL_Event menu_event;
 
-	background=SDL_CreateTextureFromSurface(ausgabe_bild, SDL_ConvertSurfaceFormat(IMG_Load("grafik/hintergrund.jpg"), SDL_PIXELFORMAT_RGB24, 0));
-	menu_text=SDL_CreateTextureFromSurface(ausgabe_bild, SDL_ConvertSurfaceFormat(IMG_Load("grafik/menu_text.gif"), SDL_PIXELFORMAT_RGB24, 0));
-	menu_back=SDL_CreateTextureFromSurface(ausgabe_bild, SDL_ConvertSurfaceFormat(IMG_Load("grafik/menu_back.jpg"), SDL_PIXELFORMAT_RGB24, 0));
-//	SDL_SetColorKey(menu_text,SDL_TRUE | SDL_RLEACCEL,SDL_MapRGB(menu_text->format,255,255,255));
+	SDL_Surface *surf;
+	surf = SDL_ConvertSurfaceFormat(IMG_Load("grafik/hintergrund.jpg"), SDL_PIXELFORMAT_RGB24, 0);
+	background=SDL_CreateTextureFromSurface(ausgabe_bild, surf);
+	SDL_FreeSurface(surf);
+	surf = SDL_ConvertSurfaceFormat(IMG_Load("grafik/menu_text.gif"), SDL_PIXELFORMAT_RGB24, 0);
+	SDL_SetColorKey(surf,SDL_TRUE | SDL_RLEACCEL,SDL_MapRGB(surf->format,255,255,255));
+	menu_text=SDL_CreateTextureFromSurface(ausgabe_bild, surf);
+	SDL_FreeSurface(surf);
+	surf = SDL_ConvertSurfaceFormat(IMG_Load("grafik/menu_back.jpg"), SDL_PIXELFORMAT_RGB24, 0);
+	menu_back=SDL_CreateTextureFromSurface(ausgabe_bild, surf);
+	SDL_FreeSurface(surf);
+
 
 	SDL_Rect area;
 	SDL_Rect ausgabe_area;
