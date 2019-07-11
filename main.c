@@ -52,7 +52,7 @@ int whether_gameend(int m[9][9]);
 //void input_name(SDL_Renderer *prev_bild, char *t_name);
 void write_hs(hs *hs_out);
 void read_hs(hs *hs_in);
-//void hilfe_menue();
+void hilfe_menue(SDL_Renderer *bild);
 void in_hs(hs hs_input);
 int pos_hs(hs hs_input);
 
@@ -70,12 +70,7 @@ int main()
 
 void program()
 {
-//	SDL_Surface *bildschirm;
 	int field=2;
-
-//	bildschirm=SDL_SetVideoMode(800,600,0,SDL_HWSURFACE);
-	
-//	bildschirm = SDL_CreateRGBSurfaceWithFormat(0, 800, 600, 24, SDL_PIXELFORMAT_RGB24);
 	
 	SDL_Window *window = SDL_CreateWindow("JA2003",
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
@@ -98,16 +93,14 @@ void program()
 //		case 4:
 //			hardware_info(bildschirm);
 //			break;
-//		case 5:
-//			hilfe_menue();
-//			break;
+		case 5:
+			hilfe_menue(bildschirm);
+			break;
 		case 6:
 			running=0;
 			break;
 		}
 	}
-
-//	SDL_FreeSurface(bildschirm);
 }
 
 void menu(SDL_Renderer *ausgabe_bild, int *field)
@@ -1022,49 +1015,60 @@ void read_hs(hs *hs_in)
 	fclose(fp);
 }
 
-//void hilfe_menue()
-//{
-//	SDL_Surface *bild=SDL_GetVideoSurface();
-//	SDL_Surface *hilfe_back=IMG_Load("grafik/info_back.jpg");
+void hilfe_menue(SDL_Renderer *bild)
+{
+	SDL_Rect hilfe_pos={50,50,0,0};
 
-//	SDL_Rect hilfe_pos={50,50,0,0};
-//	SDL_Rect ende_pos={130,550,0,0};
+	SDL_Event hilfe_event;
 
-//	SDL_Event hilfe_event;
+	TTF_Font *courier=TTF_OpenFont("fonts/SourceCodePro-Bold.ttf",20);
 
-//	TTF_Font *courier=TTF_OpenFont("fonts/SourceCodePro-Bold.ttf",20);
+	SDL_Color black={0,0,0};
 
-//	SDL_Color black={0,0,0};
+	char hilfe[20][200];
+	memset(hilfe, 0, sizeof(hilfe));
 
-//	char hilfe[20][200];
-//	memset(hilfe, 0, sizeof(hilfe));
+	SDL_ShowCursor(0);
 
-//	SDL_ShowCursor(0);
+	FILE *fp = fopen("hilfe.txt", "r");
+	for(int i=0;i<15;i++)
+	{
+		fgets(hilfe[i], 200, fp);
+		strtok(hilfe[i], "\r\n");
+	}
+	fclose(fp);
 
-//	FILE *fp = fopen("hilfe.txt", "r");
-//	for(int i=0;i<15;i++)
-//	{
-//		fgets(hilfe[i], 200, fp);
-//		strtok(hilfe[i], "\r\n");
-//	}
-//	fclose(fp);
+	SDL_Surface *surf;
+	surf=IMG_Load("grafik/info_back.jpg");
+	SDL_Texture *hilfe_back=SDL_CreateTextureFromSurface(bild, surf);
+	SDL_FreeSurface(surf);
+	SDL_RenderCopy(bild, hilfe_back, 0, 0);
 
-//	SDL_BlitSurface(hilfe_back,0,bild,0);
-//	for(int j=0;j<15;j++)
-//	{
-//		SDL_BlitSurface(TTF_RenderUTF8_Solid(courier,hilfe[j],black),0,bild,&hilfe_pos);
-//		hilfe_pos.y+=25;
-//	}
-//	SDL_BlitSurface(TTF_RenderUTF8_Solid(courier,"<belibige Taste drücken um zurück zu kehren>",black),0,bild,&ende_pos);
-//	SDL_UpdateRect(bild,0,0,0,0);
+	for(int j=0;j<15;j++)
+	{
+		surf=TTF_RenderUTF8_Solid(courier,hilfe[j],black);
+		if(surf!=0) {
+		SDL_Texture *hilfe_text=SDL_CreateTextureFromSurface(bild, surf);
+		hilfe_pos.w = surf->w;
+		hilfe_pos.h = surf->h;
+		SDL_FreeSurface(surf);
+		SDL_RenderCopy(bild, hilfe_text, 0, &hilfe_pos);
+		}
+		hilfe_pos.y+=25;
+	}
+	surf=TTF_RenderUTF8_Solid(courier,"<belibige Taste drücken um zurück zu kehren>",black);
+	SDL_Texture *ende_text=SDL_CreateTextureFromSurface(bild, surf);
+	SDL_Rect ende_pos={130,550,surf->w,surf->h};
+	SDL_FreeSurface(surf);
+	SDL_RenderCopy(bild, ende_text, 0, &ende_pos);
+	SDL_RenderPresent(bild);
 
-//	while(SDL_WaitEvent(&hilfe_event) && hilfe_event.type!=SDL_KEYDOWN);
+	while(SDL_WaitEvent(&hilfe_event) && hilfe_event.type!=SDL_KEYDOWN);
 
-//	TTF_CloseFont(courier);
+	TTF_CloseFont(courier);
 
-//	SDL_FreeSurface(bild);
-//	SDL_FreeSurface(hilfe_back);
-//}
+	SDL_DestroyTexture(hilfe_back);
+}
 
 void in_hs(hs hs_input)
 {
