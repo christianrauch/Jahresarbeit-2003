@@ -19,6 +19,7 @@ MA 02111-1307, USA.
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include <SDL_syswm.h>
 #include <time.h>
 
 typedef struct
@@ -38,7 +39,7 @@ typedef struct
 void program();
 void menu(SDL_Renderer *ausgabe_bild, int *field);
 void hs_menue(SDL_Renderer *bild);
-//void hardware_info(SDL_Renderer *bild);
+void hardware_info(SDL_Renderer *bild);
 //void free_game(SDL_Renderer *bildschirm);
 setting game_setting();
 void game(setting game);
@@ -68,11 +69,13 @@ int main()
 	return 0;
 }
 
+SDL_Window *window;
+
 void program()
 {
 	int field=2;
 	
-	SDL_Window *window = SDL_CreateWindow("JA2003",
+	window = SDL_CreateWindow("JA2003",
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		800, 600, 0);
 	
@@ -90,9 +93,9 @@ void program()
 		case 3:
 			hs_menue(bildschirm);
 			break;
-//		case 4:
-//			hardware_info(bildschirm);
-//			break;
+		case 4:
+			hardware_info(bildschirm);
+			break;
 		case 5:
 			hilfe_menue(bildschirm);
 			break;
@@ -328,73 +331,129 @@ void hs_menue(SDL_Renderer *bild)
 	SDL_DestroyTexture(highscore_text);
 }
 
-//void hardware_info(SDL_Renderer *bild)
-//{
-//	SDL_Surface *about;
-//	const SDL_VideoInfo *video_hardware;
-//	SDL_Color black={0,0,0};
-//	TTF_Font *arial_bold=TTF_OpenFont("fonts/SourceSansPro-Bold.ttf",30);
-//	TTF_Font *arial=TTF_OpenFont("fonts/SourceSansPro-Regular.ttf",20);
-//	about=SDL_ConvertSurfaceFormat(IMG_Load("grafik/info_back.jpg"), SDL_PIXELFORMAT_RGB24, 0);
-//	char text_hardware[11][100];
-//	char t_h2[11][100];
-//	SDL_Rect headline_pos={50,25};
-//	SDL_Rect text_pos={50,100,0,0};
-//	SDL_Rect t_h2_pos={650,100,0,0};
-//	SDL_Rect ende_pos={300,500,0,0};
+void hardware_info(SDL_Renderer *bild)
+{
+	SDL_Surface *about;
+	SDL_RendererInfo* info = calloc(1, sizeof(SDL_RendererInfo));
+	SDL_SysWMinfo *wm_info = calloc(1, sizeof(SDL_SysWMinfo));;
+	SDL_Color black={0,0,0};
+	TTF_Font *arial_bold=TTF_OpenFont("fonts/SourceSansPro-Bold.ttf",30);
+	TTF_Font *arial=TTF_OpenFont("fonts/SourceSansPro-Regular.ttf",20);
+	about=SDL_ConvertSurfaceFormat(IMG_Load("grafik/info_back.jpg"), SDL_PIXELFORMAT_RGB24, 0);
+	char text_hardware[12][100];
+	char t_h2[12][100];
+	SDL_Rect headline_pos={50,25};
+	SDL_Rect text_pos={50,100,0,0};
+	SDL_Rect t_h2_pos={600,100,0,0};
+	SDL_Rect ende_pos={300,500,0,0};
+	
+	memset(text_hardware, 0, sizeof(text_hardware));
+	memset(t_h2, 0, sizeof(t_h2));
 
-//	video_hardware=SDL_GetVideoInfo();
+	SDL_GetRendererInfo(bild, info);
+	SDL_VERSION(&(wm_info->version));
+	SDL_GetWindowWMInfo(window, wm_info);
+	
+	const char *subsystem;
+	switch(wm_info->subsystem)
+	{
+	case SDL_SYSWM_UNKNOWN:   subsystem = "unknown";            break;
+	case SDL_SYSWM_WINDOWS:   subsystem = "Microsoft Windows";  break;
+	case SDL_SYSWM_X11:       subsystem = "X Window System";    break;
+	case SDL_SYSWM_DIRECTFB:  subsystem = "DirectFB";           break;
+	case SDL_SYSWM_COCOA:     subsystem = "Apple OS X";         break;
+	case SDL_SYSWM_UIKIT:     subsystem = "UIKit";              break;
+#if SDL_VERSION_ATLEAST(2, 0, 2)
+	case SDL_SYSWM_WAYLAND:   subsystem = "Wayland";            break;
+	case SDL_SYSWM_MIR:       subsystem = "Mir";                break;
+#endif
+#if SDL_VERSION_ATLEAST(2, 0, 3)
+	case SDL_SYSWM_WINRT:     subsystem = "WinRT";              break;
+#endif
+#if SDL_VERSION_ATLEAST(2, 0, 4)
+	case SDL_SYSWM_ANDROID:   subsystem = "Android";            break;
+#endif
+#if SDL_VERSION_ATLEAST(2, 0, 5)
+	case SDL_SYSWM_VIVANTE:   subsystem = "Vivante";            break;
+#endif
+	case SDL_SYSWM_OS2:       subsystem = "OS/2";               break;
+	}
+	
+	SDL_ShowCursor(0);
+	
+	strcpy(text_hardware[0],"Platform:");
+	strcpy(text_hardware[1],"Windowmanager:");
+	strcpy(text_hardware[2],"Renderer:");
+	strcpy(text_hardware[3],"SDL version:");
+	strcpy(text_hardware[4],"Software-Fallback:");
+	strcpy(text_hardware[5],"Hardwarebeschleunigung:");
+	strcpy(text_hardware[6],"Synchronisiert mit Bildwiederholfrequenz:");
+	strcpy(text_hardware[7],"Unterstützt Wiedergabe auf Textur:");
+	strcpy(text_hardware[8],"Anzahl Textur formate:");
+	strcpy(text_hardware[9],"Maximale Textur Breite:");
+	strcpy(text_hardware[10],"Maximale Textur Höhe:");
+	strcpy(text_hardware[11],"Arbeitsspeicher (MB):");
+	
+	strcpy(t_h2[0],SDL_GetPlatform());
+	strcpy(t_h2[1],subsystem);
+	strcpy(t_h2[2],info->name);
+	sprintf(t_h2[3],"%d.%d.%d", wm_info->version.major, wm_info->version.minor, wm_info->version.patch);
+	strcpy(t_h2[4],info->flags & SDL_RENDERER_SOFTWARE ? "Ja" : "Nein");
+	strcpy(t_h2[5],info->flags & SDL_RENDERER_ACCELERATED ? "Ja" : "Nein");
+	strcpy(t_h2[6],info->flags & SDL_RENDERER_PRESENTVSYNC ? "Ja" : "Nein");
+	strcpy(t_h2[7],info->flags & SDL_RENDERER_TARGETTEXTURE ? "Ja" : "Nein");
+	sprintf(t_h2[8],"%d",info->num_texture_formats);
+	sprintf(t_h2[9],"%d",info->max_texture_width);
+	sprintf(t_h2[10],"%d",info->max_texture_height);
+	sprintf(t_h2[11],"%d",SDL_GetSystemRAM());
 
-//	SDL_ShowCursor(0);
+	SDL_Texture *about_text=SDL_CreateTextureFromSurface(bild, about);
+	SDL_RenderCopy(bild, about_text, 0, 0);
+	SDL_Surface *surf;
+	surf = TTF_RenderUTF8_Solid(arial_bold,"Informationen über Videohardware:",black);
+	SDL_Texture *headline=SDL_CreateTextureFromSurface(bild, surf);
+	headline_pos.w = surf->w;
+	headline_pos.h = surf->h;
+	SDL_FreeSurface(surf);
+	SDL_RenderCopy(bild, headline, 0, &headline_pos);
+	for(int j=0;j<12;j++)
+	{
+		surf = TTF_RenderUTF8_Solid(arial,text_hardware[j],black);
+		if(surf!=0) {
+			SDL_Texture *text=SDL_CreateTextureFromSurface(bild, surf);
+			text_pos.w = surf->w;
+			text_pos.h = surf->h;
+			SDL_FreeSurface(surf);
+			SDL_RenderCopy(bild, text, 0, &text_pos);
+		}
+		surf = TTF_RenderUTF8_Solid(arial,t_h2[j],black);
+		if(surf!=0) {
+			SDL_Texture *t_h2=SDL_CreateTextureFromSurface(bild, surf);
+			t_h2_pos.w = surf->w;
+			t_h2_pos.h = surf->h;
+			SDL_FreeSurface(surf);
+			SDL_RenderCopy(bild, t_h2, 0, &t_h2_pos);
+		}
+		text_pos.y+=30;
+		t_h2_pos.y+=30;
+	}
+	surf = TTF_RenderUTF8_Solid(arial,"<beliebige Taste>",black);
+	SDL_Texture *ende=SDL_CreateTextureFromSurface(bild, surf);
+	ende_pos.w = surf->w;
+	ende_pos.h = surf->h;
+	SDL_FreeSurface(surf);
+	SDL_RenderCopy(bild, ende, 0, &ende_pos);
+	SDL_RenderPresent(bild);
 
-//	strcpy(text_hardware[0],"Hardwareoberflächen:");
-//	strcpy(text_hardware[1],"Windowmanager:");
-//	strcpy(text_hardware[2],"Beschleunigung von Hard- zu Hardware Übertragungen:");
-//	strcpy(text_hardware[3],"Beschleunigung von Hard- zu Hardware Transparetübertragungen:");
-//	strcpy(text_hardware[4],"Beschleunigung von Hard- zu Hardware Alphakanalübertragungen:");
-//	strcpy(text_hardware[5],"Beschleunigung von Soft- zu Hardware Übertragungen:");
-//	strcpy(text_hardware[6],"Beschleunigung von Soft- zu Hardware Tranzparentübertragungen:");
-//	strcpy(text_hardware[7],"Beschleunigung von Soft- zu Hardware Alphakanalübertragungen:");
-//	strcpy(text_hardware[8],"Beschleunigung von Flächenfüllungen:");
-//	strcpy(text_hardware[9],"Verfügbarer Videospeicher:");
-//	strcpy(text_hardware[10],"Farben:");
+	SDL_Event about_event;
 
-//	strcpy(t_h2[0],video_hardware->hw_available ? "Ja" : "Nein");
-//	strcpy(t_h2[1],video_hardware->wm_available ? "Ja" : "Nein");
-//	strcpy(t_h2[2],video_hardware->blit_hw ? "Ja" : "Nein");
-//	strcpy(t_h2[3],video_hardware->blit_hw_CC ? "Ja" : "Nein");
-//	strcpy(t_h2[4],video_hardware->blit_hw_A ? "Ja" : "Nein");
-//	strcpy(t_h2[5],video_hardware->blit_sw ? "Ja" : "Nein");
-//	strcpy(t_h2[6],video_hardware->blit_sw_CC ? "Ja" : "Nein");
-//	strcpy(t_h2[7],video_hardware->blit_sw_A ? "Ja" : "Nein");
-//	strcpy(t_h2[8],video_hardware->blit_fill ? "Ja" : "Nein");
-//	sprintf(t_h2[9], "%d", video_hardware->video_mem);
-//	strcat(t_h2[9]," KB");
-//	sprintf(t_h2[10], "%d", video_hardware->vfmt->BitsPerPixel);
-//	strcat(t_h2[10]," Bit");
+	while(SDL_WaitEvent(&about_event) && about_event.type!=SDL_KEYDOWN);
 
-//	SDL_BlitSurface(about,0,bild,0);
-//	SDL_BlitSurface(TTF_RenderUTF8_Solid(arial_bold,"Informationen über Videohardware:",black),0,bild,&headline_pos);
-//	for(int j=0;j<11;j++)
-//	{
-//		SDL_BlitSurface(TTF_RenderUTF8_Solid(arial,text_hardware[j],black),0,bild,&text_pos);
-//		SDL_BlitSurface(TTF_RenderUTF8_Solid(arial,t_h2[j],black),0,bild,&t_h2_pos);
-//		text_pos.y+=30;
-//		t_h2_pos.y+=30;
-//	}
-//	SDL_BlitSurface(TTF_RenderUTF8_Solid(arial,"<beliebige Taste>",black),0,bild,&ende_pos);
-//	SDL_UpdateRect(bild,0,0,0,0);
+	TTF_CloseFont(arial_bold);
+	TTF_CloseFont(arial);
 
-//	SDL_Event about_event;
-
-//	while(SDL_WaitEvent(&about_event) && about_event.type!=SDL_KEYDOWN);
-
-//	TTF_CloseFont(arial_bold);
-//	TTF_CloseFont(arial);
-
-//	SDL_FreeSurface(about);
-//	SDL_FreeSurface(bild);
-//}
+	SDL_FreeSurface(about);
+}
 
 //void free_game(SDL_Renderer *bildschirm)
 //{
