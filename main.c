@@ -859,8 +859,8 @@ void input_name(SDL_Surface *prev_bild, char *t_name)
 {
 	SDL_Surface *bild=SDL_GetVideoSurface();
 	SDL_Event input_event;
-	TTF_Font *copperplate2=TTF_OpenFont("fonts/PermanentMarker.ttf",20);
-	SDL_Rect name_pos={202,110,0,0};
+	TTF_Font *copperplate2=TTF_OpenFont("fonts/PermanentMarker.ttf",30);
+	SDL_Rect name_pos={205,110,0,0};
 	SDL_Color black={0,0,0};
 
 	int i=0;
