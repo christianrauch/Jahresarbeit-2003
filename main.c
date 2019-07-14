@@ -21,6 +21,7 @@ MA 02111-1307, USA.
 #include <SDL_ttf.h>
 #include <SDL_syswm.h>
 #include <time.h>
+#include <sys/stat.h>
 
 typedef struct
 {
@@ -71,6 +72,8 @@ int main()
 
 SDL_Window *window;
 
+char *user_config_path;
+
 void program()
 {
 	int field=2;
@@ -80,6 +83,11 @@ void program()
 		800, 600, 0);
 	
 	SDL_Renderer *bildschirm = SDL_CreateRenderer(window, -1, 0);
+
+	user_config_path = strcat(getenv("HOME"), "/.config/");
+	mkdir(user_config_path, S_IRWXU | S_IRWXG);
+	strcat(user_config_path, "jahresarbeit2003/");
+	mkdir(user_config_path, S_IRWXU | S_IRWXG);
 
 	int running=1;
 	while(running)
@@ -1094,7 +1102,9 @@ void input_name(SDL_Renderer *prev_bild, char *t_name)
 
 void write_hs(hs *hs_out)
 {
-	FILE *fp = fopen("highscore.txt", "w");
+	char fullpath[200];
+	sprintf(fullpath, "%s%s", user_config_path, "highscore.txt");
+	FILE *fp = fopen(fullpath, "w");
 
 	for(int i=0;i<10;i++)
 	{
@@ -1111,7 +1121,14 @@ void write_hs(hs *hs_out)
 
 void read_hs(hs *hs_in)
 {
-	FILE *fp = fopen("highscore.txt", "r");
+	FILE *fp;
+
+	char fullpath[200];
+	sprintf(fullpath, "%s%s", user_config_path, "highscore.txt");
+	fp = fopen(fullpath, "r");
+	if(fp==0) {
+		fp = fopen("highscore.txt", "r");
+	}
 
 	for(int i=0;i<10;i++)
 	{
