@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-project(ja2003)
+project(Jahresarbeit-2003)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
@@ -9,5 +9,13 @@ find_package(SDL2_image REQUIRED)
 
 include_directories(${SDL2_INCLUDE_DIR} ${SDL2_TTF_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
 
-add_executable(${PROJECT_NAME} main.c)
-target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} ${SDL2_TTF_LIBRARIES} ${SDL2_IMAGE_LIBRARIES})
+add_executable(ja2003 main.c)
+target_link_libraries(ja2003 ${SDL2_LIBRARIES} ${SDL2_TTF_LIBRARIES} ${SDL2_IMAGE_LIBRARIES})
+
+if((CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT OR NOT CMAKE_INSTALL_PREFIX) AND UNIX)
+    set(CMAKE_INSTALL_PREFIX "/opt/${PROJECT_NAME}")
+endif()
+
+install(TARGETS ja2003 RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
+install(DIRECTORY grafik fonts DESTINATION ${CMAKE_INSTALL_PREFIX})
+install(FILES hilfe.txt highscore.txt DESTINATION ${CMAKE_INSTALL_PREFIX})
