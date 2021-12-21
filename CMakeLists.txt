@@ -3,6 +3,27 @@ project(Jahresarbeit-2003)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
+option(ASAN "build with AddressSanitizer")
+
+if (ASAN)
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} \
+        -fsanitize=address \
+        -fsanitize=bool \
+        -fsanitize=bounds \
+        -fsanitize=enum \
+        -fsanitize=float-cast-overflow \
+        -fsanitize=float-divide-by-zero \
+        -fsanitize=nonnull-attribute \
+        -fsanitize=returns-nonnull-attribute \
+        -fsanitize=signed-integer-overflow \
+        -fsanitize=undefined \
+        -fsanitize=vla-bound \
+        -fno-sanitize=alignment \
+        -fsanitize=leak \
+        -fsanitize=object-size \
+    ")
+endif()
+
 find_package(SDL2 REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 find_package(SDL2_image REQUIRED)
