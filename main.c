@@ -795,7 +795,7 @@ void change_matrix(int matrix[9][9], char *arrows, int nr)
 	if(arrows=="oben")
 	{
 		temp=matrix[nr][0];
-		for(int i=0;i<9;i++)
+		for(int i=0;i<8;i++)
 		{
 			matrix[nr][i]=matrix[nr][i+1];
 		}
@@ -805,7 +805,7 @@ void change_matrix(int matrix[9][9], char *arrows, int nr)
 	if(arrows=="unten")
 	{
 		temp=matrix[nr][8];
-		for(int i=8;i>=0;i--)
+		for(int i=8;i>=1;i--)
 		{
 			matrix[nr][i]=matrix[nr][i-1];
 		}
@@ -815,7 +815,7 @@ void change_matrix(int matrix[9][9], char *arrows, int nr)
 	if(arrows=="links")
 	{
 		temp=matrix[0][nr];
-		for(int i=0;i<9;i++)
+		for(int i=0;i<8;i++)
 		{
 			matrix[i][nr]=matrix[i+1][nr];
 		}
@@ -825,7 +825,7 @@ void change_matrix(int matrix[9][9], char *arrows, int nr)
 	if(arrows=="rechts")
 	{
 		temp=matrix[8][nr];
-		for(int i=8;i>=0;i--)
+		for(int i=8;i>=1;i--)
 		{
 			matrix[i][nr]=matrix[i-1][nr];
 		}
@@ -853,20 +853,17 @@ int look_for_match(int m[9][9], int x, int y)
 
 	do
 	{
-		if(m[pos_x[i]][pos_y[i]-1]==farbe)
+		if(pos_y[i]-1>=0 && m[pos_x[i]][pos_y[i]-1]==farbe)
 		{
-			if(pos_y[i]-1>=0)
-			{
-				m[pos_x[i]][pos_y[i]-1]=0;
-				anzahl++;
-				pos_x[i+1]=pos_x[i];
-				pos_y[i+1]=pos_y[i]-1;
-				i++;
-				continue;
-			}
+			m[pos_x[i]][pos_y[i]-1]=0;
+			anzahl++;
+			pos_x[i+1]=pos_x[i];
+			pos_y[i+1]=pos_y[i]-1;
+			i++;
+			continue;
 		}
 
-		if(m[pos_x[i]+1][pos_y[i]]==farbe)
+		if(pos_x[i]+1<=8 && m[pos_x[i]+1][pos_y[i]]==farbe)
 		{
 			m[pos_x[i]+1][pos_y[i]]=0;
 			anzahl++;
@@ -876,20 +873,17 @@ int look_for_match(int m[9][9], int x, int y)
 			continue;
 		}
 
-		if(m[pos_x[i]][pos_y[i]+1]==farbe)
+		if(pos_y[i]+1<=8 && m[pos_x[i]][pos_y[i]+1]==farbe)
 		{
-			if(pos_y[i]+1<=8)
-			{
-				m[pos_x[i]][pos_y[i]+1]=0;
-				anzahl++;
-				pos_x[i+1]=pos_x[i];
-				pos_y[i+1]=pos_y[i]+1;
-				i++;
-				continue;
-			}
+			m[pos_x[i]][pos_y[i]+1]=0;
+			anzahl++;
+			pos_x[i+1]=pos_x[i];
+			pos_y[i+1]=pos_y[i]+1;
+			i++;
+			continue;
 		}
 
-		if(m[pos_x[i]-1][pos_y[i]]==farbe)
+		if(pos_x[i]-1>=0 && m[pos_x[i]-1][pos_y[i]]==farbe)
 		{
 			m[pos_x[i]-1][pos_y[i]]=0;
 			anzahl++;
