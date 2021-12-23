@@ -195,9 +195,7 @@ void program()
 	
 	load_resources();
 	
-	user_config_path = strcat(getenv("HOME"), "/.config/");
-	mkdir(user_config_path, S_IRWXU | S_IRWXG);
-	strcat(user_config_path, "jahresarbeit2003/");
+	user_config_path = SDL_GetPrefPath("", "jahresarbeit2003");
 	mkdir(user_config_path, S_IRWXU | S_IRWXG);
 
 	int running=1;
