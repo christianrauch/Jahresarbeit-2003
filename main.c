@@ -1015,12 +1015,6 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 
 	if(pos!=0)
 	{
-		surf = TTF_RenderUTF8_Solid(font.copperplate2,"Name: ",black);
-		SDL_Texture *name=SDL_CreateTextureFromSurface(bild, surf);
-		name_pos.w = surf->w;
-		name_pos.h = surf->h;
-		SDL_FreeSurface(surf);
-		SDL_RenderCopy(bild, name, 0, &name_pos);
 		input_name(bild, t_name);
 
 		strcpy(hs_in.name,t_name);
@@ -1111,6 +1105,8 @@ void input_name(SDL_Renderer *prev_bild, char *t_name)
 	SDL_Event input_event;
 	SDL_Rect name_pos={205,110,0,0};
 	SDL_Color black={0,0,0};
+	SDL_Rect headline={120,50,0,0};
+	SDL_Rect name_label_pos={130,110,0,0};
 
 	int i=0;
 	int taste=0;
@@ -1120,11 +1116,40 @@ void input_name(SDL_Renderer *prev_bild, char *t_name)
 	memset(t_name, 0, 30);
 	
 	SDL_Rect max_name = {.x=name_pos.x, .y=name_pos.y};
-	
-	SDL_RenderPresent(bild);
 
 	do
 	{
+		SDL_Texture *stat_back_txt=SDL_CreateTextureFromSurface(bild, imgs.stat_back);
+		SDL_RenderCopy(bild, stat_back_txt, 0, 0);
+
+		SDL_Surface *surf;
+		surf = TTF_RenderUTF8_Solid(font.copperplate,"SPIELENDE",black);
+		SDL_Texture *headline_txt=SDL_CreateTextureFromSurface(bild, surf);
+		headline.w = surf->w;
+		headline.h = surf->h;
+		SDL_FreeSurface(surf);
+		SDL_RenderCopy(bild, headline_txt, 0, &headline);
+		
+		surf = TTF_RenderUTF8_Solid(font.copperplate2,"Name: ",black);
+		SDL_Texture *name=SDL_CreateTextureFromSurface(bild, surf);
+		name_label_pos.w = surf->w;
+		name_label_pos.h = surf->h;
+		SDL_FreeSurface(surf);
+		SDL_RenderCopy(bild, name, 0, &name_label_pos);
+		SDL_RenderCopy(bild, stat_back, &max_name, &max_name);
+		
+		surf = TTF_RenderUTF8_Solid(font.marker,t_name,black);
+		if(surf!=0) {
+			SDL_Texture *name=SDL_CreateTextureFromSurface(bild, surf);
+			name_pos.w = surf->w;
+			name_pos.h = surf->h;
+			if(name_pos.w>max_name.w) max_name.w = name_pos.w;
+			if(name_pos.h>max_name.h) max_name.h = name_pos.h;
+			SDL_FreeSurface(surf);
+			SDL_RenderCopy(bild, name, 0, &name_pos);
+		}
+		SDL_RenderPresent(bild);
+		
 		if(SDL_WaitEvent(&input_event))
 		{
 			if(input_event.key.state==SDL_PRESSED) {
@@ -1159,22 +1184,6 @@ void input_name(SDL_Renderer *prev_bild, char *t_name)
 					t_name[i]='\0';
 					taste=0;
 				}
-				
-				SDL_RenderCopy(bild, stat_back, &max_name, &max_name);
-				
-				SDL_Surface *surf = TTF_RenderUTF8_Solid(font.marker,t_name,black);
-				if(surf!=0) {
-					SDL_Texture *name=SDL_CreateTextureFromSurface(bild, surf);
-					name_pos.w = surf->w;
-					name_pos.h = surf->h;
-					if(name_pos.w>max_name.w) max_name.w = name_pos.w;
-					if(name_pos.h>max_name.h) max_name.h = name_pos.h;
-					SDL_FreeSurface(surf);
-					SDL_RenderCopy(bild, name, 0, &name_pos);
-				}
-				
-				SDL_RenderPresent(bild);
-				SDL_Delay(1);
 			}
 		}
 	}while(taste!=SDLK_RETURN);
