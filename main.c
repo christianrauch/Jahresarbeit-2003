@@ -356,6 +356,12 @@ void hs_menue(SDL_Renderer *bild)
 		sprintf(zeit[i],"%d", highscorer[i].zeit);
 	}
 	
+	// render into texture
+	int w, h;
+	SDL_GetRendererOutputSize(bild, &w, &h);
+	SDL_Texture *texture = SDL_CreateTexture(bild, SDL_GetWindowPixelFormat(window), SDL_TEXTUREACCESS_TARGET, w, h);
+	SDL_SetRenderTarget(bild, texture);
+	
 	SDL_Surface *surf;
 	surf = SDL_ConvertSurfaceFormat(imgs.info_back, SDL_PIXELFORMAT_RGB24, 0);
 	highscore_back=SDL_CreateTextureFromSurface(bild, surf);
@@ -439,12 +445,21 @@ void hs_menue(SDL_Renderer *bild)
 	SDL_FreeSurface(surf);
 	SDL_RenderCopy(bild, ende_text, 0, &ende_pos);
 	SDL_RenderPresent(bild);
+	
+	// set screen as render target
+	SDL_SetRenderTarget(bild, NULL);
 
 	SDL_Event highscore_event;
-
-	while(SDL_WaitEvent(&highscore_event) && highscore_event.type!=SDL_KEYDOWN)
+	
+	do
+	{
+		// render texture to screen
+		SDL_RenderCopy(bild, texture, NULL, NULL);
+		SDL_RenderPresent(bild);
+		
 		if(highscore_event.type==SDL_WINDOWEVENT && highscore_event.window.event == SDL_WINDOWEVENT_CLOSE)
 			exit(0);
+	}while(SDL_WaitEvent(&highscore_event) && highscore_event.type!=SDL_KEYDOWN);
 
 	SDL_DestroyTexture(highscore_back);
 	SDL_DestroyTexture(highscore_text);
@@ -523,6 +538,12 @@ void hardware_info(SDL_Renderer *bild)
 	sprintf(t_h2[9],"%d",info->max_texture_width);
 	sprintf(t_h2[10],"%d",info->max_texture_height);
 	sprintf(t_h2[11],"%d",SDL_GetSystemRAM());
+	
+	// render into texture
+	int w, h;
+	SDL_GetRendererOutputSize(bild, &w, &h);
+	SDL_Texture *texture = SDL_CreateTexture(bild, SDL_GetWindowPixelFormat(window), SDL_TEXTUREACCESS_TARGET, w, h);
+	SDL_SetRenderTarget(bild, texture);
 
 	SDL_Texture *about_text=SDL_CreateTextureFromSurface(bild, about);
 	SDL_RenderCopy(bild, about_text, 0, 0);
@@ -561,12 +582,21 @@ void hardware_info(SDL_Renderer *bild)
 	SDL_FreeSurface(surf);
 	SDL_RenderCopy(bild, ende, 0, &ende_pos);
 	SDL_RenderPresent(bild);
+	
+	// set screen as render target
+	SDL_SetRenderTarget(bild, NULL);
 
 	SDL_Event about_event;
-
-	while(SDL_WaitEvent(&about_event) && about_event.type!=SDL_KEYDOWN)
+	
+	do
+	{
+		// render texture to screen
+		SDL_RenderCopy(bild, texture, NULL, NULL);
+		SDL_RenderPresent(bild);
+		
 		if(about_event.type==SDL_WINDOWEVENT && about_event.window.event == SDL_WINDOWEVENT_CLOSE)
 			exit(0);
+	}while(SDL_WaitEvent(&about_event) && about_event.type!=SDL_KEYDOWN);
 	
 	free(wm_info);
 	free(info);
@@ -1262,9 +1292,17 @@ void hilfe_menue(SDL_Renderer *bild)
 	SDL_Color black={0,0,0};
 
 	SDL_ShowCursor(0);
+	
+	// render into texture
+	int w, h;
+	SDL_GetRendererOutputSize(bild, &w, &h);
+	SDL_Texture *texture = SDL_CreateTexture(bild, SDL_GetWindowPixelFormat(window), SDL_TEXTUREACCESS_TARGET, w, h);
+	SDL_SetRenderTarget(bild, texture);
 
 	SDL_Texture *hilfe_back=SDL_CreateTextureFromSurface(bild, imgs.info_back);
 	SDL_RenderCopy(bild, hilfe_back, 0, 0);
+	
+	SDL_Texture *hilfe_text = SDL_CreateTexture(bild, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, 50, 50);
 
 	for(int j=0;j<15;j++)
 	{
@@ -1286,12 +1324,22 @@ void hilfe_menue(SDL_Renderer *bild)
 	SDL_FreeSurface(surf);
 	SDL_RenderCopy(bild, ende_text, 0, &ende_pos);
 	SDL_RenderPresent(bild);
+	
+	// set screen as render target
+	SDL_SetRenderTarget(bild, NULL);
 
-	while(SDL_WaitEvent(&hilfe_event) && hilfe_event.type!=SDL_KEYDOWN)
+	do
+	{
+		// render texture to screen
+		SDL_RenderCopy(bild, texture, NULL, NULL);
+		SDL_RenderPresent(bild);
+		
 		if(hilfe_event.type==SDL_WINDOWEVENT && hilfe_event.window.event == SDL_WINDOWEVENT_CLOSE)
 			exit(0);
+	}while(SDL_WaitEvent(&hilfe_event) && hilfe_event.type!=SDL_KEYDOWN);
 
 	SDL_DestroyTexture(hilfe_back);
+	SDL_DestroyTexture(texture);
 }
 
 void in_hs(hs hs_input)
