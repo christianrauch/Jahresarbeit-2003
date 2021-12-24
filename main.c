@@ -319,6 +319,10 @@ void menu(SDL_Renderer *ausgabe_bild, int *field)
 			case 7: *field=2; break;
 			}
 		}
+		else if(menu_event.type==SDL_WINDOWEVENT && menu_event.window.event == SDL_WINDOWEVENT_CLOSE)
+		{
+			exit(0);
+		}
 	}
 	
 	SDL_DestroyTexture(background);
@@ -438,7 +442,9 @@ void hs_menue(SDL_Renderer *bild)
 
 	SDL_Event highscore_event;
 
-	while(SDL_WaitEvent(&highscore_event) && highscore_event.type!=SDL_KEYDOWN);
+	while(SDL_WaitEvent(&highscore_event) && highscore_event.type!=SDL_KEYDOWN)
+		if(highscore_event.type==SDL_WINDOWEVENT && highscore_event.window.event == SDL_WINDOWEVENT_CLOSE)
+			exit(0);
 
 	SDL_DestroyTexture(highscore_back);
 	SDL_DestroyTexture(highscore_text);
@@ -558,7 +564,9 @@ void hardware_info(SDL_Renderer *bild)
 
 	SDL_Event about_event;
 
-	while(SDL_WaitEvent(&about_event) && about_event.type!=SDL_KEYDOWN);
+	while(SDL_WaitEvent(&about_event) && about_event.type!=SDL_KEYDOWN)
+		if(about_event.type==SDL_WINDOWEVENT && about_event.window.event == SDL_WINDOWEVENT_CLOSE)
+			exit(0);
 	
 	free(wm_info);
 	free(info);
@@ -654,6 +662,10 @@ void game(SDL_Renderer *bildschirm)
 				change_matrix(matrix, "links", (event_m.button.y-matrix_pos.y)/50);
 			}
 
+			break;
+		case SDL_WINDOWEVENT:
+			if(event_m.window.event == SDL_WINDOWEVENT_CLOSE)
+				exit(0);
 			break;
 		}
 	}
@@ -1096,7 +1108,9 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 	SDL_RenderCopy(bild, ende, 0, &ende_pos);
 	SDL_RenderPresent(bild);
 
-	while(SDL_WaitEvent(&stat_event) && stat_event.type!=SDL_KEYDOWN);
+	while(SDL_WaitEvent(&stat_event) && stat_event.type!=SDL_KEYDOWN)
+		if(stat_event.type==SDL_WINDOWEVENT && stat_event.window.event == SDL_WINDOWEVENT_CLOSE)
+			exit(0);
 }
 
 void input_name(SDL_Renderer *prev_bild, char *t_name)
@@ -1185,6 +1199,10 @@ void input_name(SDL_Renderer *prev_bild, char *t_name)
 					taste=0;
 				}
 			}
+			else if(input_event.type==SDL_WINDOWEVENT && input_event.window.event == SDL_WINDOWEVENT_CLOSE)
+			{
+				exit(0);
+			}
 		}
 	}while(taste!=SDLK_RETURN);
 }
@@ -1269,7 +1287,9 @@ void hilfe_menue(SDL_Renderer *bild)
 	SDL_RenderCopy(bild, ende_text, 0, &ende_pos);
 	SDL_RenderPresent(bild);
 
-	while(SDL_WaitEvent(&hilfe_event) && hilfe_event.type!=SDL_KEYDOWN);
+	while(SDL_WaitEvent(&hilfe_event) && hilfe_event.type!=SDL_KEYDOWN)
+		if(hilfe_event.type==SDL_WINDOWEVENT && hilfe_event.window.event == SDL_WINDOWEVENT_CLOSE)
+			exit(0);
 
 	SDL_DestroyTexture(hilfe_back);
 }
