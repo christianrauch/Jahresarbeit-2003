@@ -514,6 +514,9 @@ void game(SDL_Renderer *bildschirm, setting game_s)
 	{
 		draw_matrix(matrix,matrix_pos,game_s.piece_set);
 		SDL_WaitEvent(&event_m);
+		// cheat for debugging
+		if (event_m.type==SDL_KEYDOWN && event_m.key.keysym.sym == SDLK_1)
+			break;
 		switch(event_m.type)
 		{
 		case SDL_KEYDOWN:
