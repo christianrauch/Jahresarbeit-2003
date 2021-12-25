@@ -51,7 +51,7 @@ void change_matrix(int matrix[9][9], char *arrows, int nr);
 int look_for_match(int matrix[9][9], int pos_x, int pos_y);
 int whether_gameend(int m[9][9]);
 void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_anz);
-void input_name(SDL_Renderer *prev_bild, char *t_name);
+void input_name(SDL_Texture *texture, char *t_name);
 void write_hs(hs *hs_out);
 void read_hs(hs *hs_in);
 void hilfe_menue(SDL_Renderer *bild);
@@ -1037,6 +1037,12 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 	strcpy(t_stat2[0],"Gr. Fläche:");
 	strcpy(t_stat2[1],"Klicks pro Sekunde:");
 	strcpy(t_stat2[2],"Zeit für gr. Fläche:");
+	
+	// render into texture
+	int w, h;
+	SDL_GetRendererOutputSize(bild, &w, &h);
+	SDL_Texture *texture = SDL_CreateTexture(bild, SDL_GetWindowPixelFormat(window), SDL_TEXTUREACCESS_TARGET, w, h);
+	SDL_SetRenderTarget(bild, texture);
 
 	SDL_Texture *stat_back_txt=SDL_CreateTextureFromSurface(bild, imgs.stat_back);
 	SDL_RenderCopy(bild, stat_back_txt, 0, 0);
@@ -1048,6 +1054,11 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 	headline.h = surf->h;
 	SDL_FreeSurface(surf);
 	SDL_RenderCopy(bild, headline_txt, 0, &headline);
+	
+	// render screen
+	SDL_SetRenderTarget(bild, NULL);
+	SDL_RenderCopy(bild, texture, NULL, NULL);
+	SDL_RenderPresent(bild);
 
 	hs_in.punkte=p;
 	hs_in.gr_fla=max_anz;
@@ -1057,7 +1068,8 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 
 	if(pos!=0)
 	{
-		input_name(bild, t_name);
+		input_name(texture, t_name);
+		SDL_SetRenderTarget(bild, texture);
 
 		strcpy(hs_in.name,t_name);
 
@@ -1137,13 +1149,22 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 	SDL_FreeSurface(surf);
 	SDL_RenderCopy(bild, ende, 0, &ende_pos);
 	SDL_RenderPresent(bild);
-
-	while(SDL_WaitEvent(&stat_event) && stat_event.type!=SDL_KEYDOWN)
+	
+	// set screen as render target
+	SDL_SetRenderTarget(bild, NULL);
+	
+	do
+	{
+		// render texture to screen
+		SDL_RenderCopy(bild, texture, NULL, NULL);
+		SDL_RenderPresent(bild);
+		
 		if(stat_event.type==SDL_WINDOWEVENT && stat_event.window.event == SDL_WINDOWEVENT_CLOSE)
 			exit(0);
+	}while(SDL_WaitEvent(&stat_event) && stat_event.type!=SDL_KEYDOWN);
 }
 
-void input_name(SDL_Renderer *prev_bild, char *t_name)
+void input_name(SDL_Texture *texture, char *t_name)
 {
 	SDL_Renderer *bild=SDL_GetRenderer(window);
 	SDL_Event input_event;
@@ -1163,17 +1184,10 @@ void input_name(SDL_Renderer *prev_bild, char *t_name)
 
 	do
 	{
-		SDL_Texture *stat_back_txt=SDL_CreateTextureFromSurface(bild, imgs.stat_back);
-		SDL_RenderCopy(bild, stat_back_txt, 0, 0);
+		// render updated name into texture
+		SDL_SetRenderTarget(bild, texture);
 
 		SDL_Surface *surf;
-		surf = TTF_RenderUTF8_Solid(font.copperplate,"SPIELENDE",black);
-		SDL_Texture *headline_txt=SDL_CreateTextureFromSurface(bild, surf);
-		headline.w = surf->w;
-		headline.h = surf->h;
-		SDL_FreeSurface(surf);
-		SDL_RenderCopy(bild, headline_txt, 0, &headline);
-		
 		surf = TTF_RenderUTF8_Solid(font.copperplate2,"Name: ",black);
 		SDL_Texture *name=SDL_CreateTextureFromSurface(bild, surf);
 		name_label_pos.w = surf->w;
@@ -1192,6 +1206,10 @@ void input_name(SDL_Renderer *prev_bild, char *t_name)
 			SDL_FreeSurface(surf);
 			SDL_RenderCopy(bild, name, 0, &name_pos);
 		}
+		
+		// render texture to screen
+		SDL_SetRenderTarget(bild, NULL);
+		SDL_RenderCopy(bild, texture, NULL, NULL);
 		SDL_RenderPresent(bild);
 		
 		if(SDL_WaitEvent(&input_event))
