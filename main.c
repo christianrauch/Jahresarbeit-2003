@@ -1252,7 +1252,7 @@ void input_name(SDL_Texture *texture, char *t_name)
 				exit(0);
 			}
 		}
-	}while(taste!=SDLK_RETURN);
+	}while(!(taste==SDLK_RETURN && t_name[0]!='\0'));
 }
 
 void write_hs(hs *hs_out)
