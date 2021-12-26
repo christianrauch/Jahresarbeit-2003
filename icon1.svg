@@ -1,0 +1,7 @@
+<svg width="10mm" height="10mm" version="1.1" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">
+ <path id="yellow" d="m0 8.75v-1.25h2.5v-2.5h5v2.5h-2.5v2.5h-5zm0-7.5v-1.25h2.5v2.5h-2.5z" fill="#fefe00"/>
+ <path id="red" d="m0 3.75v-1.25h5v2.5h-5z" fill="#fe0000"/>
+ <path id="green" d="m0 6.25v-1.25h2.5v2.5h-2.5zm7.5 0v-1.25h2.5v2.5h-2.5z" fill="#00fe00"/>
+ <path id="blue" d="m7.5 8.75v-1.25h2.5v2.5h-2.5zm-2.5-5v-1.25h-2.5v-2.5h2.5v2.5h2.5v2.5h-2.5z" fill="#0000fe"/>
+ <path id="brown" d="m5 8.75v-1.25h2.5v2.5h-2.5zm2.5-5v-1.25h-2.5v-2.5h5v5h-2.5z" fill="#7f0000"/>
+</svg>
