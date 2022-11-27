@@ -6,7 +6,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 option(ASAN "build with AddressSanitizer")
 
 if (ASAN)
-    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} \
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} \
         -fsanitize=address \
         -fsanitize=bool \
         -fsanitize=bounds \
