@@ -108,9 +108,9 @@ void load_resources()
 
 	data_path = SDL_GetBasePath();
 	game_s=game_setting();
-	
+
 	char path[4096];
-	
+
 	snprintf(path, 4096, "%s/%s", data_path, "grafik/hintergrund.jpg");
 	imgs.background = IMG_Load(path);
 	snprintf(path, 4096, "%s/%s", data_path, "grafik/menu_text.gif");
@@ -125,7 +125,7 @@ void load_resources()
 	imgs.direction_arrows = IMG_Load(path);
 	snprintf(path, 4096, "%s/%s", data_path, "grafik/stat_back.jpg");
 	imgs.stat_back = IMG_Load(path);
-	
+
 	snprintf(path, 4096, "%s/%s", data_path, "fonts/IndieFlower.ttf");
 	font.copperplate2=TTF_OpenFont(path,30);
 	snprintf(path, 4096, "%s/%s", data_path, "fonts/DoubleFeature.ttf");
@@ -134,22 +134,22 @@ void load_resources()
 	font.bradley=TTF_OpenFont(path,30);
 	snprintf(path, 4096, "%s/%s", data_path, "fonts/PermanentMarker.ttf");
 	font.comic=TTF_OpenFont(path,20);
-	
+
 	snprintf(path, 4096, "%s/%s", data_path, "fonts/SourceSansPro-Bold.ttf");
 	font.arial_bold=TTF_OpenFont(path,30);
 	snprintf(path, 4096, "%s/%s", data_path, "fonts/SourceSansPro-Regular.ttf");
 	font.arial=TTF_OpenFont(path,20);
-	
+
 	snprintf(path, 4096, "%s/%s", data_path, "fonts/IndieFlower.ttf");
 	font.copperplate=TTF_OpenFont(path,50);
-	
+
 	snprintf(path, 4096, "%s/%s", data_path, "fonts/PermanentMarker.ttf");
 	font.marker=TTF_OpenFont(path,30);
 	snprintf(path, 4096, "%s/%s", data_path, "fonts/SourceCodePro-Bold.ttf");
 	font.courier=TTF_OpenFont(path,20);
-	
+
 	memset(hilfe, 0, sizeof(hilfe));
-	
+
 	snprintf(path, 4096, "%s/%s", data_path, "hilfe.txt");
 	FILE *fp = fopen(path, "r");
 	for(int i=0;i<15;i++)
@@ -169,7 +169,7 @@ void free_resources()
 	SDL_FreeSurface(imgs.piece_set);
 	SDL_FreeSurface(imgs.direction_arrows);
 	SDL_FreeSurface(imgs.stat_back);
-	
+
 	TTF_CloseFont(font.copperplate2);
 	TTF_CloseFont(font.bloody);
 	TTF_CloseFont(font.bradley);
@@ -179,22 +179,22 @@ void free_resources()
 	TTF_CloseFont(font.copperplate);
 	TTF_CloseFont(font.marker);
 	TTF_CloseFont(font.courier);
-	
+
 	free(data_path);
 }
 
 void program()
 {
 	int field=2;
-	
+
 	window = SDL_CreateWindow("JA2003",
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		800, 600, 0);
-	
+
 	SDL_Renderer *bildschirm = SDL_CreateRenderer(window, -1, 0);
-	
+
 	load_resources();
-	
+
 	user_config_path = SDL_GetPrefPath("", "jahresarbeit2003");
 	mkdir(user_config_path, S_IRWXU | S_IRWXG);
 
@@ -221,9 +221,9 @@ void program()
 			break;
 		}
 	}
-	
+
 	free_resources();
-	
+
 	SDL_DestroyRenderer(bildschirm);
 	SDL_DestroyWindow(window);
 }
@@ -287,7 +287,7 @@ void menu(SDL_Renderer *ausgabe_bild, int *field)
 			else
 				continue;
 		}
-		
+
 		SDL_RenderCopy(ausgabe_bild, background, 0, 0);
 		SDL_RenderCopy(ausgabe_bild, menu_back, &menu_back_pos, &menu_pos);
 		SDL_RenderCopy(ausgabe_bild, menu_back, &area, &ausgabe_area);
@@ -324,7 +324,7 @@ void menu(SDL_Renderer *ausgabe_bild, int *field)
 			exit(0);
 		}
 	}
-	
+
 	SDL_DestroyTexture(background);
 	SDL_DestroyTexture(menu_text);
 	SDL_DestroyTexture(menu_back);
@@ -355,13 +355,13 @@ void hs_menue(SDL_Renderer *bild)
 		sprintf(gr_fla[i],"%d", highscorer[i].gr_fla);
 		sprintf(zeit[i],"%d", highscorer[i].zeit);
 	}
-	
+
 	// render into texture
 	int w, h;
 	SDL_GetRendererOutputSize(bild, &w, &h);
 	SDL_Texture *texture = SDL_CreateTexture(bild, SDL_GetWindowPixelFormat(window), SDL_TEXTUREACCESS_TARGET, w, h);
 	SDL_SetRenderTarget(bild, texture);
-	
+
 	SDL_Surface *surf;
 	surf = SDL_ConvertSurfaceFormat(imgs.info_back, SDL_PIXELFORMAT_RGB24, 0);
 	highscore_back=SDL_CreateTextureFromSurface(bild, surf);
@@ -380,19 +380,19 @@ void hs_menue(SDL_Renderer *bild)
 	SDL_Rect name_pos={120,170,surf->w,surf->h};
 	SDL_FreeSurface(surf);
 	SDL_RenderCopy(bild, name_text, 0, &name_pos);
-	
+
 	surf = TTF_RenderUTF8_Solid(font.bradley,"Punkte",black);
 	SDL_Texture *punkte_text=SDL_CreateTextureFromSurface(bild, surf);
 	SDL_Rect punkte_pos={470,170,surf->w,surf->h};
 	SDL_FreeSurface(surf);
 	SDL_RenderCopy(bild, punkte_text, 0, &punkte_pos);
-	
+
 	surf = TTF_RenderUTF8_Solid(font.bradley,"Fläche",black);
 	SDL_Texture *fla_text=SDL_CreateTextureFromSurface(bild, surf);
 	SDL_Rect gr_fla_pos={580,170,surf->w,surf->h};
 	SDL_FreeSurface(surf);
 	SDL_RenderCopy(bild, fla_text, 0, &gr_fla_pos);
-	
+
 	surf = TTF_RenderUTF8_Solid(font.bradley,"Zeit",black);
 	SDL_Texture *zeit_text=SDL_CreateTextureFromSurface(bild, surf);
 	SDL_Rect zeit_pos={690,170,surf->w,surf->h};
@@ -413,7 +413,7 @@ void hs_menue(SDL_Renderer *bild)
 		SDL_FreeSurface(surf);
 		SDL_RenderCopy(bild, name_text, 0, &name_pos);
 		name_pos.y+=z_abst;
-		
+
 		surf = TTF_RenderUTF8_Solid(font.bradley,punkte[j],black);
 		SDL_Texture *punkte_text=SDL_CreateTextureFromSurface(bild, surf);
 		punkte_pos.w = surf->w;
@@ -421,7 +421,7 @@ void hs_menue(SDL_Renderer *bild)
 		SDL_FreeSurface(surf);
 		SDL_RenderCopy(bild, punkte_text, 0, &punkte_pos);
 		punkte_pos.y+=z_abst;
-		
+
 		surf = TTF_RenderUTF8_Solid(font.bradley,gr_fla[j],black);
 		SDL_Texture *gr_fla_text=SDL_CreateTextureFromSurface(bild, surf);
 		gr_fla_pos.w = surf->w;
@@ -429,7 +429,7 @@ void hs_menue(SDL_Renderer *bild)
 		SDL_FreeSurface(surf);
 		SDL_RenderCopy(bild, gr_fla_text, 0, &gr_fla_pos);
 		gr_fla_pos.y+=z_abst;
-		
+
 		surf = TTF_RenderUTF8_Solid(font.bradley,zeit[j],black);
 		SDL_Texture *zeit_text=SDL_CreateTextureFromSurface(bild, surf);
 		zeit_pos.w = surf->w;
@@ -445,18 +445,18 @@ void hs_menue(SDL_Renderer *bild)
 	SDL_FreeSurface(surf);
 	SDL_RenderCopy(bild, ende_text, 0, &ende_pos);
 	SDL_RenderPresent(bild);
-	
+
 	// set screen as render target
 	SDL_SetRenderTarget(bild, NULL);
 
 	SDL_Event highscore_event;
-	
+
 	do
 	{
 		// render texture to screen
 		SDL_RenderCopy(bild, texture, NULL, NULL);
 		SDL_RenderPresent(bild);
-		
+
 		if(highscore_event.type==SDL_WINDOWEVENT && highscore_event.window.event == SDL_WINDOWEVENT_CLOSE)
 			exit(0);
 	}while(SDL_WaitEvent(&highscore_event) && highscore_event.type!=SDL_KEYDOWN);
@@ -478,14 +478,14 @@ void hardware_info(SDL_Renderer *bild)
 	SDL_Rect text_pos={50,100,0,0};
 	SDL_Rect t_h2_pos={600,100,0,0};
 	SDL_Rect ende_pos={300,500,0,0};
-	
+
 	memset(text_hardware, 0, sizeof(text_hardware));
 	memset(t_h2, 0, sizeof(t_h2));
 
 	SDL_GetRendererInfo(bild, info);
 	SDL_VERSION(&(wm_info->version));
 	SDL_GetWindowWMInfo(window, wm_info);
-	
+
 	const char *subsystem;
 	switch(wm_info->subsystem)
 	{
@@ -510,9 +510,9 @@ void hardware_info(SDL_Renderer *bild)
 #endif
 	case SDL_SYSWM_OS2:       subsystem = "OS/2";               break;
 	}
-	
+
 	SDL_ShowCursor(0);
-	
+
 	strcpy(text_hardware[0],"Platform:");
 	strcpy(text_hardware[1],"Windowmanager:");
 	strcpy(text_hardware[2],"Renderer:");
@@ -525,7 +525,7 @@ void hardware_info(SDL_Renderer *bild)
 	strcpy(text_hardware[9],"Maximale Textur Breite:");
 	strcpy(text_hardware[10],"Maximale Textur Höhe:");
 	strcpy(text_hardware[11],"Arbeitsspeicher (MB):");
-	
+
 	strcpy(t_h2[0],SDL_GetPlatform());
 	strcpy(t_h2[1],subsystem);
 	strcpy(t_h2[2],info->name);
@@ -538,7 +538,7 @@ void hardware_info(SDL_Renderer *bild)
 	sprintf(t_h2[9],"%d",info->max_texture_width);
 	sprintf(t_h2[10],"%d",info->max_texture_height);
 	sprintf(t_h2[11],"%d",SDL_GetSystemRAM());
-	
+
 	// render into texture
 	int w, h;
 	SDL_GetRendererOutputSize(bild, &w, &h);
@@ -582,22 +582,22 @@ void hardware_info(SDL_Renderer *bild)
 	SDL_FreeSurface(surf);
 	SDL_RenderCopy(bild, ende, 0, &ende_pos);
 	SDL_RenderPresent(bild);
-	
+
 	// set screen as render target
 	SDL_SetRenderTarget(bild, NULL);
 
 	SDL_Event about_event;
-	
+
 	do
 	{
 		// render texture to screen
 		SDL_RenderCopy(bild, texture, NULL, NULL);
 		SDL_RenderPresent(bild);
-		
+
 		if(about_event.type==SDL_WINDOWEVENT && about_event.window.event == SDL_WINDOWEVENT_CLOSE)
 			exit(0);
 	}while(SDL_WaitEvent(&about_event) && about_event.type!=SDL_KEYDOWN);
-	
+
 	free(wm_info);
 	free(info);
 
@@ -756,7 +756,7 @@ void draw_matrix(int matrix[9][9], SDL_Rect matrix_pos)
 	}
 
 	SDL_RenderPresent(bildschirm);
-	
+
 	SDL_FreeSurface(hintergrund);
 }
 
@@ -1037,7 +1037,7 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 	strcpy(t_stat2[0],"Gr. Fläche:");
 	strcpy(t_stat2[1],"Klicks pro Sekunde:");
 	strcpy(t_stat2[2],"Zeit für gr. Fläche:");
-	
+
 	// render into texture
 	int w, h;
 	SDL_GetRendererOutputSize(bild, &w, &h);
@@ -1054,7 +1054,7 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 	headline.h = surf->h;
 	SDL_FreeSurface(surf);
 	SDL_RenderCopy(bild, headline_txt, 0, &headline);
-	
+
 	// render screen
 	SDL_SetRenderTarget(bild, NULL);
 	SDL_RenderCopy(bild, texture, NULL, NULL);
@@ -1149,16 +1149,16 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 	SDL_FreeSurface(surf);
 	SDL_RenderCopy(bild, ende, 0, &ende_pos);
 	SDL_RenderPresent(bild);
-	
+
 	// set screen as render target
 	SDL_SetRenderTarget(bild, NULL);
-	
+
 	do
 	{
 		// render texture to screen
 		SDL_RenderCopy(bild, texture, NULL, NULL);
 		SDL_RenderPresent(bild);
-		
+
 		if(stat_event.type==SDL_WINDOWEVENT && stat_event.window.event == SDL_WINDOWEVENT_CLOSE)
 			exit(0);
 	}while(SDL_WaitEvent(&stat_event) && stat_event.type!=SDL_KEYDOWN);
@@ -1175,11 +1175,11 @@ void input_name(SDL_Texture *texture, char *t_name)
 
 	int i=0;
 	int taste=0;
-	
+
 	SDL_Texture *stat_back=SDL_CreateTextureFromSurface(bild, imgs.stat_back);
 
 	memset(t_name, 0, 30);
-	
+
 	SDL_Rect max_name = {.x=name_pos.x, .y=name_pos.y};
 
 	do
@@ -1195,7 +1195,7 @@ void input_name(SDL_Texture *texture, char *t_name)
 		SDL_FreeSurface(surf);
 		SDL_RenderCopy(bild, name, 0, &name_label_pos);
 		SDL_RenderCopy(bild, stat_back, &max_name, &max_name);
-		
+
 		surf = TTF_RenderUTF8_Solid(font.marker,t_name,black);
 		if(surf!=0) {
 			SDL_Texture *name=SDL_CreateTextureFromSurface(bild, surf);
@@ -1206,17 +1206,17 @@ void input_name(SDL_Texture *texture, char *t_name)
 			SDL_FreeSurface(surf);
 			SDL_RenderCopy(bild, name, 0, &name_pos);
 		}
-		
+
 		// render texture to screen
 		SDL_SetRenderTarget(bild, NULL);
 		SDL_RenderCopy(bild, texture, NULL, NULL);
 		SDL_RenderPresent(bild);
-		
+
 		if(SDL_WaitEvent(&input_event))
 		{
 			if(input_event.key.state==SDL_PRESSED) {
 				taste=input_event.key.keysym.sym;
-			
+
 				if((taste>=SDLK_0 && taste<=SDLK_9) || (taste>=SDLK_a && taste<=SDLK_z)) // || taste==SDLK_SPACE)
 				{
 					if(taste!=32)
@@ -1225,7 +1225,7 @@ void input_name(SDL_Texture *texture, char *t_name)
 							taste='y';
 						else if(taste=='y')
 							taste='z';
-						
+
 						t_name[i]=(char)taste-32;
 					}
 					else
@@ -1310,7 +1310,7 @@ void hilfe_menue(SDL_Renderer *bild)
 	SDL_Color black={0,0,0};
 
 	SDL_ShowCursor(0);
-	
+
 	// render into texture
 	int w, h;
 	SDL_GetRendererOutputSize(bild, &w, &h);
@@ -1319,7 +1319,7 @@ void hilfe_menue(SDL_Renderer *bild)
 
 	SDL_Texture *hilfe_back=SDL_CreateTextureFromSurface(bild, imgs.info_back);
 	SDL_RenderCopy(bild, hilfe_back, 0, 0);
-	
+
 	SDL_Texture *hilfe_text = SDL_CreateTexture(bild, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, 50, 50);
 
 	for(int j=0;j<15;j++)
@@ -1342,7 +1342,7 @@ void hilfe_menue(SDL_Renderer *bild)
 	SDL_FreeSurface(surf);
 	SDL_RenderCopy(bild, ende_text, 0, &ende_pos);
 	SDL_RenderPresent(bild);
-	
+
 	// set screen as render target
 	SDL_SetRenderTarget(bild, NULL);
 
@@ -1351,7 +1351,7 @@ void hilfe_menue(SDL_Renderer *bild)
 		// render texture to screen
 		SDL_RenderCopy(bild, texture, NULL, NULL);
 		SDL_RenderPresent(bild);
-		
+
 		if(hilfe_event.type==SDL_WINDOWEVENT && hilfe_event.window.event == SDL_WINDOWEVENT_CLOSE)
 			exit(0);
 	}while(SDL_WaitEvent(&hilfe_event) && hilfe_event.type!=SDL_KEYDOWN);
