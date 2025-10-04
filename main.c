@@ -19,7 +19,6 @@ MA 02111-1307, USA.
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
-#include <SDL3/SDL_syswm.h>
 #include <time.h>
 #include <sys/stat.h>
 #include <stdio.h>
@@ -470,8 +469,6 @@ void hs_menue(SDL_Renderer *bild)
 void hardware_info(SDL_Renderer *bild)
 {
 	SDL_Surface *about;
-	SDL_RendererInfo* info = calloc(1, sizeof(SDL_RendererInfo));
-	SDL_SysWMinfo *wm_info = calloc(1, sizeof(SDL_SysWMinfo));;
 	SDL_Color black={0,0,0};
 	about=SDL_ConvertSurface(imgs.info_back, SDL_PIXELFORMAT_RGB24);
 	char text_hardware[12][100];
@@ -484,33 +481,19 @@ void hardware_info(SDL_Renderer *bild)
 	memset(text_hardware, 0, sizeof(text_hardware));
 	memset(t_h2, 0, sizeof(t_h2));
 
-	SDL_GetRendererInfo(bild, info);
-	SDL_VERSION(&(wm_info->version));
-	SDL_GetWindowWMInfo(window, wm_info);
+	const int sdl_ver = SDL_GetVersion();
 
-	const char *subsystem;
-	switch(wm_info->subsystem)
-	{
-	case SDL_SYSWM_UNKNOWN:   subsystem = "unknown";            break;
-	case SDL_SYSWM_WINDOWS:   subsystem = "Microsoft Windows";  break;
-	case SDL_SYSWM_X11:       subsystem = "X Window System";    break;
-	case SDL_SYSWM_DIRECTFB:  subsystem = "DirectFB";           break;
-	case SDL_SYSWM_COCOA:     subsystem = "Apple OS X";         break;
-	case SDL_SYSWM_UIKIT:     subsystem = "UIKit";              break;
-#if SDL_VERSION_ATLEAST(2, 0, 2)
-	case SDL_SYSWM_WAYLAND:   subsystem = "Wayland";            break;
-	case SDL_SYSWM_MIR:       subsystem = "Mir";                break;
-#endif
-#if SDL_VERSION_ATLEAST(2, 0, 3)
-	case SDL_SYSWM_WINRT:     subsystem = "WinRT";              break;
-#endif
-#if SDL_VERSION_ATLEAST(2, 0, 4)
-	case SDL_SYSWM_ANDROID:   subsystem = "Android";            break;
-#endif
-#if SDL_VERSION_ATLEAST(2, 0, 5)
-	case SDL_SYSWM_VIVANTE:   subsystem = "Vivante";            break;
-#endif
-	case SDL_SYSWM_OS2:       subsystem = "OS/2";               break;
+	const char *subsystem = SDL_GetCurrentVideoDriver();
+	const char *renderer_name = SDL_GetRendererName(bild);
+
+	const bool is_software_renderer = strcmp(renderer_name, SDL_SOFTWARE_RENDERER) == 0;
+
+	const SDL_PropertiesID properties = SDL_GetRendererProperties(bild);
+
+	const SDL_PixelFormat *formats = SDL_GetPointerProperty(properties, SDL_PROP_RENDERER_TEXTURE_FORMATS_POINTER, NULL);
+	int num_texture_formats = 0;
+	if (formats) {
+		for(num_texture_formats = 0; formats[num_texture_formats] != SDL_PIXELFORMAT_UNKNOWN; num_texture_formats++);
 	}
 
 	SDL_HideCursor();
@@ -530,15 +513,15 @@ void hardware_info(SDL_Renderer *bild)
 
 	strcpy(t_h2[0],SDL_GetPlatform());
 	strcpy(t_h2[1],subsystem);
-	strcpy(t_h2[2],info->name);
-	sprintf(t_h2[3],"%d.%d.%d", wm_info->version.major, wm_info->version.minor, wm_info->version.patch);
-	strcpy(t_h2[4],info->flags & SDL_RENDERER_SOFTWARE ? "Ja" : "Nein");
-	strcpy(t_h2[5],info->flags & SDL_RENDERER_ACCELERATED ? "Ja" : "Nein");
-	strcpy(t_h2[6],info->flags & SDL_RENDERER_PRESENTVSYNC ? "Ja" : "Nein");
-	strcpy(t_h2[7],info->flags & SDL_RENDERER_TARGETTEXTURE ? "Ja" : "Nein");
-	sprintf(t_h2[8],"%d",info->num_texture_formats);
-	sprintf(t_h2[9],"%d",info->max_texture_width);
-	sprintf(t_h2[10],"%d",info->max_texture_height);
+	strcpy(t_h2[2],renderer_name);
+	sprintf(t_h2[3],"%d.%d.%d", SDL_VERSIONNUM_MAJOR(sdl_ver), SDL_VERSIONNUM_MINOR(sdl_ver), SDL_VERSIONNUM_MICRO(sdl_ver));
+	strcpy(t_h2[4],is_software_renderer ? "Ja" : "Nein");
+	strcpy(t_h2[5],!is_software_renderer ? "Ja" : "Nein");
+	strcpy(t_h2[6],(SDL_GetNumberProperty(properties, SDL_PROP_RENDERER_VSYNC_NUMBER, 0) > 0) ? "Ja" : "Nein");
+	strcpy(t_h2[7],"Ja");
+	sprintf(t_h2[8],"%d",num_texture_formats);
+	sprintf(t_h2[9],"%d",SDL_GetNumberProperty(properties, SDL_PROP_RENDERER_MAX_TEXTURE_SIZE_NUMBER, 0));
+	sprintf(t_h2[10],"%d",SDL_GetNumberProperty(properties, SDL_PROP_RENDERER_MAX_TEXTURE_SIZE_NUMBER, 0));
 	sprintf(t_h2[11],"%d",SDL_GetSystemRAM());
 
 	// render into texture
@@ -599,9 +582,6 @@ void hardware_info(SDL_Renderer *bild)
 		if(about_event.window.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED)
 			exit(0);
 	}while(SDL_WaitEvent(&about_event) && about_event.type!=SDL_EVENT_KEY_DOWN);
-
-	free(wm_info);
-	free(info);
 
 	SDL_DestroySurface(about);
 }
