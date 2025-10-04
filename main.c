@@ -16,10 +16,10 @@ Falls nicht, schreiben Sie an die Free Software Foundation, Inc., 59 Temple Plac
 MA 02111-1307, USA.
 */
 
-#include <SDL.h>
-#include <SDL_image.h>
-#include <SDL_ttf.h>
-#include <SDL_syswm.h>
+#include <SDL3/SDL.h>
+#include <SDL3_image/SDL_image.h>
+#include <SDL3_ttf/SDL_ttf.h>
+#include <SDL3/SDL_syswm.h>
 #include <time.h>
 #include <sys/stat.h>
 #include <stdio.h>
