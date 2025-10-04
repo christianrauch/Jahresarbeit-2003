@@ -190,7 +190,6 @@ void program()
 	int field=2;
 
 	window = SDL_CreateWindow("JA2003",
-		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		800, 600, 0);
 
 	SDL_Renderer *bildschirm = SDL_CreateRenderer(window, -1, 0);
