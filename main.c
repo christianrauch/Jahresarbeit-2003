@@ -244,7 +244,8 @@ void menu(SDL_Renderer *ausgabe_bild, int *field)
 	background=SDL_CreateTextureFromSurface(ausgabe_bild, surf);
 	SDL_DestroySurface(surf);
 	surf = SDL_ConvertSurface(imgs.menu_text, SDL_PIXELFORMAT_RGB24);
-	SDL_SetSurfaceColorKey(surf,true | SDL_RLEACCEL,SDL_MapRGB(surf->format,255,255,255));
+	SDL_SetSurfaceColorKey(surf,true,SDL_MapRGB(surf->format,255,255,255));
+	SDL_SetSurfaceRLE(surf, true);
 	menu_text=SDL_CreateTextureFromSurface(ausgabe_bild, surf);
 	SDL_DestroySurface(surf);
 	surf = SDL_ConvertSurface(imgs.menu_back, SDL_PIXELFORMAT_RGB24);
@@ -736,7 +737,8 @@ void draw_matrix(int matrix[9][9], SDL_Rect matrix_pos)
 	SDL_RenderTexture(bildschirm, hintergrund_txt, 0, 0);
 	draw_arrows(matrix_pos);
 	pieces=SDL_ConvertSurface(imgs.piece_set, SDL_PIXELFORMAT_RGB24);
-	SDL_SetSurfaceColorKey(pieces,true | SDL_RLEACCEL,SDL_MapRGB(pieces->format,255,0,255));
+	SDL_SetSurfaceColorKey(pieces,true,SDL_MapRGB(pieces->format,255,0,255));
+	SDL_SetSurfaceRLE(pieces, true);
 	SDL_Texture *pieces_txt=SDL_CreateTextureFromSurface(bildschirm, pieces);
 	SDL_DestroySurface(pieces);
 
@@ -771,7 +773,8 @@ void draw_arrows(SDL_Rect matrix_pos)
 
 	bildschirm=SDL_GetRenderer(window);
 	direction_arrows=SDL_ConvertSurface(imgs.direction_arrows, SDL_PIXELFORMAT_RGB24);
-	SDL_SetSurfaceColorKey(direction_arrows,SDL_RLEACCEL | true,SDL_MapRGB(direction_arrows->format,255,255,255));
+	SDL_SetSurfaceColorKey(direction_arrows,true,SDL_MapRGB(direction_arrows->format,255,255,255));
+	SDL_SetSurfaceRLE(direction_arrows, true);
 	SDL_Texture *direction_arrows_txt=SDL_CreateTextureFromSurface(bildschirm, direction_arrows);
 
 	pfeil_ko.x=0;
