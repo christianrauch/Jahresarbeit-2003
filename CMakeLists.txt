@@ -24,14 +24,12 @@ if (ASAN)
     ")
 endif()
 
-find_package(SDL2 REQUIRED)
-find_package(SDL2_ttf REQUIRED)
-find_package(SDL2_image REQUIRED)
-
-include_directories(${SDL2_INCLUDE_DIR} ${SDL2_TTF_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
+find_package(SDL3 REQUIRED CONFIG REQUIRED COMPONENTS SDL3)
+find_package(SDL3_ttf REQUIRED)
+find_package(SDL3_image REQUIRED)
 
 add_executable(ja2003 main.c)
-target_link_libraries(ja2003 ${SDL2_LIBRARIES} ${SDL2_TTF_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} m)
+target_link_libraries(ja2003 PRIVATE SDL3::SDL3 SDL3_ttf::SDL3_ttf SDL3_image::SDL3_image)
 
 if((CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT OR NOT CMAKE_INSTALL_PREFIX) AND UNIX)
     set(CMAKE_INSTALL_PREFIX "/opt/${PROJECT_NAME}")
