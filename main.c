@@ -62,7 +62,7 @@ int pos_hs(hs hs_input);
 
 int main()
 {
-	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER);
+	SDL_Init(SDL_INIT_VIDEO);
 	TTF_Init();
 
 	program();
