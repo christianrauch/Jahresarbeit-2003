@@ -231,7 +231,7 @@ void program()
 
 void menu(SDL_Renderer *ausgabe_bild, int *field)
 {
-	SDL_ShowCursor(SDL_DISABLE);
+	SDL_HideCursor();
 
 	SDL_Texture *background;
 	SDL_Texture *menu_text;
@@ -346,7 +346,7 @@ void hs_menue(SDL_Renderer *bild)
 
 	int z_abst=30;
 
-	SDL_ShowCursor(0);
+	SDL_HideCursor();
 
 	read_hs(highscorer);
 
@@ -512,7 +512,7 @@ void hardware_info(SDL_Renderer *bild)
 	case SDL_SYSWM_OS2:       subsystem = "OS/2";               break;
 	}
 
-	SDL_ShowCursor(0);
+	SDL_HideCursor();
 
 	strcpy(text_hardware[0],"Platform:");
 	strcpy(text_hardware[1],"Windowmanager:");
@@ -607,7 +607,7 @@ void hardware_info(SDL_Renderer *bild)
 
 void free_game(SDL_Renderer *bildschirm)
 {
-	SDL_ShowCursor(SDL_ENABLE);
+	SDL_ShowCursor();
 
 	game(bildschirm);
 }
@@ -1003,7 +1003,7 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 
 	hs hs_in;
 
-	SDL_ShowCursor(0);
+	SDL_HideCursor();
 
 	p=(max_anz*1000000*100)/(time2*k_ges);
 
@@ -1310,7 +1310,7 @@ void hilfe_menue(SDL_Renderer *bild)
 
 	SDL_Color black={0,0,0};
 
-	SDL_ShowCursor(0);
+	SDL_HideCursor();
 
 	// render into texture
 	int w, h;
