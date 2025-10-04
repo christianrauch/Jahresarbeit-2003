@@ -1217,7 +1217,7 @@ void input_name(SDL_Texture *texture, char *t_name)
 
 		if(SDL_WaitEvent(&input_event))
 		{
-			if(input_event.key.state==SDL_PRESSED) {
+			if(input_event.key.down) {
 				taste=input_event.key.key;
 
 				if((taste>=SDLK_0 && taste<=SDLK_9) || (taste>=SDLK_A && taste<=SDLK_Z)) // || taste==SDLK_SPACE)
