@@ -192,7 +192,7 @@ void program()
 	window = SDL_CreateWindow("JA2003",
 		800, 600, 0);
 
-	SDL_Renderer *bildschirm = SDL_CreateRenderer(window, -1, 0);
+	SDL_Renderer *bildschirm = SDL_CreateRenderer(window, NULL);
 
 	load_resources();
 
