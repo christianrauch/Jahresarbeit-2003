@@ -371,31 +371,31 @@ void hs_menue(SDL_Renderer *bild)
 
 	SDL_RenderTexture(bild, highscore_back, 0, 0);
 
-	surf = TTF_RenderUTF8_Solid(font.bloody,"HIGHSCORE",red);
+	surf = TTF_RenderText_Solid(font.bloody,"HIGHSCORE",0,red);
 	SDL_Texture *highscore_text=SDL_CreateTextureFromSurface(bild, surf);
 	SDL_FRect headline_pos={200,60,surf->w,surf->h};
 	SDL_DestroySurface(surf);
 	SDL_RenderTexture(bild, highscore_text, 0, &headline_pos);
 
-	surf = TTF_RenderUTF8_Solid(font.bradley,"Name",black);
+	surf = TTF_RenderText_Solid(font.bradley,"Name",0,black);
 	SDL_Texture *name_text=SDL_CreateTextureFromSurface(bild, surf);
 	SDL_FRect name_pos={120,170,surf->w,surf->h};
 	SDL_DestroySurface(surf);
 	SDL_RenderTexture(bild, name_text, 0, &name_pos);
 
-	surf = TTF_RenderUTF8_Solid(font.bradley,"Punkte",black);
+	surf = TTF_RenderText_Solid(font.bradley,"Punkte",0,black);
 	SDL_Texture *punkte_text=SDL_CreateTextureFromSurface(bild, surf);
 	SDL_FRect punkte_pos={470,170,surf->w,surf->h};
 	SDL_DestroySurface(surf);
 	SDL_RenderTexture(bild, punkte_text, 0, &punkte_pos);
 
-	surf = TTF_RenderUTF8_Solid(font.bradley,"Fläche",black);
+	surf = TTF_RenderText_Solid(font.bradley,"Fläche",0,black);
 	SDL_Texture *fla_text=SDL_CreateTextureFromSurface(bild, surf);
 	SDL_FRect gr_fla_pos={580,170,surf->w,surf->h};
 	SDL_DestroySurface(surf);
 	SDL_RenderTexture(bild, fla_text, 0, &gr_fla_pos);
 
-	surf = TTF_RenderUTF8_Solid(font.bradley,"Zeit",black);
+	surf = TTF_RenderText_Solid(font.bradley,"Zeit",0,black);
 	SDL_Texture *zeit_text=SDL_CreateTextureFromSurface(bild, surf);
 	SDL_FRect zeit_pos={690,170,surf->w,surf->h};
 	SDL_DestroySurface(surf);
@@ -408,7 +408,7 @@ void hs_menue(SDL_Renderer *bild)
 
 	for(int j=0;j<10;j++)
 	{
-		surf = TTF_RenderUTF8_Solid(font.comic,highscorer[j].name,black);
+		surf = TTF_RenderText_Solid(font.comic,highscorer[j].name,0,black);
 		SDL_Texture *name_text=SDL_CreateTextureFromSurface(bild, surf);
 		name_pos.w = surf->w;
 		name_pos.h = surf->h;
@@ -416,7 +416,7 @@ void hs_menue(SDL_Renderer *bild)
 		SDL_RenderTexture(bild, name_text, 0, &name_pos);
 		name_pos.y+=z_abst;
 
-		surf = TTF_RenderUTF8_Solid(font.bradley,punkte[j],black);
+		surf = TTF_RenderText_Solid(font.bradley,punkte[j],0,black);
 		SDL_Texture *punkte_text=SDL_CreateTextureFromSurface(bild, surf);
 		punkte_pos.w = surf->w;
 		punkte_pos.h = surf->h;
@@ -424,7 +424,7 @@ void hs_menue(SDL_Renderer *bild)
 		SDL_RenderTexture(bild, punkte_text, 0, &punkte_pos);
 		punkte_pos.y+=z_abst;
 
-		surf = TTF_RenderUTF8_Solid(font.bradley,gr_fla[j],black);
+		surf = TTF_RenderText_Solid(font.bradley,gr_fla[j],0,black);
 		SDL_Texture *gr_fla_text=SDL_CreateTextureFromSurface(bild, surf);
 		gr_fla_pos.w = surf->w;
 		gr_fla_pos.h = surf->h;
@@ -432,7 +432,7 @@ void hs_menue(SDL_Renderer *bild)
 		SDL_RenderTexture(bild, gr_fla_text, 0, &gr_fla_pos);
 		gr_fla_pos.y+=z_abst;
 
-		surf = TTF_RenderUTF8_Solid(font.bradley,zeit[j],black);
+		surf = TTF_RenderText_Solid(font.bradley,zeit[j],0,black);
 		SDL_Texture *zeit_text=SDL_CreateTextureFromSurface(bild, surf);
 		zeit_pos.w = surf->w;
 		zeit_pos.h = surf->h;
@@ -441,7 +441,7 @@ void hs_menue(SDL_Renderer *bild)
 		zeit_pos.y+=z_abst;
 	}
 
-	surf = TTF_RenderUTF8_Solid(font.copperplate2,"<bel. Taste druecken um zurueck zu kehren>",black);
+	surf = TTF_RenderText_Solid(font.copperplate2,"<bel. Taste druecken um zurueck zu kehren>",0,black);
 	SDL_Texture *ende_text=SDL_CreateTextureFromSurface(bild, surf);
 	SDL_FRect ende_pos={150,550,surf->w,surf->h};
 	SDL_DestroySurface(surf);
@@ -550,7 +550,7 @@ void hardware_info(SDL_Renderer *bild)
 	SDL_Texture *about_text=SDL_CreateTextureFromSurface(bild, about);
 	SDL_RenderTexture(bild, about_text, 0, 0);
 	SDL_Surface *surf;
-	surf = TTF_RenderUTF8_Solid(font.arial_bold,"Informationen über Videohardware:",black);
+	surf = TTF_RenderText_Solid(font.arial_bold,"Informationen über Videohardware:",0,black);
 	SDL_Texture *headline=SDL_CreateTextureFromSurface(bild, surf);
 	headline_pos.w = surf->w;
 	headline_pos.h = surf->h;
@@ -558,7 +558,7 @@ void hardware_info(SDL_Renderer *bild)
 	SDL_RenderTexture(bild, headline, 0, &headline_pos);
 	for(int j=0;j<12;j++)
 	{
-		surf = TTF_RenderUTF8_Solid(font.arial,text_hardware[j],black);
+		surf = TTF_RenderText_Solid(font.arial,text_hardware[j],0,black);
 		if(surf!=0) {
 			SDL_Texture *text=SDL_CreateTextureFromSurface(bild, surf);
 			text_pos.w = surf->w;
@@ -566,7 +566,7 @@ void hardware_info(SDL_Renderer *bild)
 			SDL_DestroySurface(surf);
 			SDL_RenderTexture(bild, text, 0, &text_pos);
 		}
-		surf = TTF_RenderUTF8_Solid(font.arial,t_h2[j],black);
+		surf = TTF_RenderText_Solid(font.arial,t_h2[j],0,black);
 		if(surf!=0) {
 			SDL_Texture *t_h2=SDL_CreateTextureFromSurface(bild, surf);
 			t_h2_pos.w = surf->w;
@@ -577,7 +577,7 @@ void hardware_info(SDL_Renderer *bild)
 		text_pos.y+=30;
 		t_h2_pos.y+=30;
 	}
-	surf = TTF_RenderUTF8_Solid(font.arial,"<beliebige Taste>",black);
+	surf = TTF_RenderText_Solid(font.arial,"<beliebige Taste>",0,black);
 	SDL_Texture *ende=SDL_CreateTextureFromSurface(bild, surf);
 	ende_pos.w = surf->w;
 	ende_pos.h = surf->h;
@@ -1051,7 +1051,7 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 	SDL_RenderTexture(bild, stat_back_txt, 0, 0);
 
 	SDL_Surface *surf;
-	surf = TTF_RenderUTF8_Solid(font.copperplate,"SPIELENDE",black);
+	surf = TTF_RenderText_Solid(font.copperplate,"SPIELENDE",0,black);
 	SDL_Texture *headline_txt=SDL_CreateTextureFromSurface(bild, surf);
 	headline.w = surf->w;
 	headline.h = surf->h;
@@ -1088,20 +1088,20 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 		strcpy(t_pos,"Ihre Leistung war nicht ausreichend für die Highscore");
 	}
 
-	surf = TTF_RenderUTF8_Solid(font.copperplate2,t_pos,black);
+	surf = TTF_RenderText_Solid(font.copperplate2,t_pos,0,black);
 	SDL_Texture *pos_txt=SDL_CreateTextureFromSurface(bild, surf);
 	pos_pos.w = surf->w;
 	pos_pos.h = surf->h;
 	SDL_DestroySurface(surf);
 	SDL_RenderTexture(bild, pos_txt, 0, &pos_pos);
 
-	surf = TTF_RenderUTF8_Solid(font.copperplate2,t_zeit,black);
+	surf = TTF_RenderText_Solid(font.copperplate2,t_zeit,0,black);
 	SDL_Texture *time_txt=SDL_CreateTextureFromSurface(bild, surf);
 	time_pos.w = surf->w;
 	time_pos.h = surf->h;
 	SDL_DestroySurface(surf);
 	SDL_RenderTexture(bild, time_txt, 0, &time_pos);
-	surf = TTF_RenderUTF8_Solid(font.copperplate2,t_punkte,black);
+	surf = TTF_RenderText_Solid(font.copperplate2,t_punkte,0,black);
 	SDL_Texture *punkte=SDL_CreateTextureFromSurface(bild, surf);
 	punkte_pos.w = surf->w;
 	punkte_pos.h = surf->h;
@@ -1110,7 +1110,7 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 
 	for(int i=0;i<4;i++)
 	{
-		surf = TTF_RenderUTF8_Solid(font.copperplate2,t_stat1[i],black);
+		surf = TTF_RenderText_Solid(font.copperplate2,t_stat1[i],0,black);
 		SDL_Texture *name=SDL_CreateTextureFromSurface(bild, surf);
 		stat1_pos.w = surf->w;
 		stat1_pos.h = surf->h;
@@ -1118,7 +1118,7 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 		SDL_RenderTexture(bild, name, 0, &stat1_pos);
 		stat1_pos.y+=30;
 		if(i==3) continue;
-		surf = TTF_RenderUTF8_Solid(font.copperplate2,t_k[i],black);
+		surf = TTF_RenderText_Solid(font.copperplate2,t_k[i],0,black);
 		SDL_Texture *k=SDL_CreateTextureFromSurface(bild, surf);
 		k_pos.w = surf->w;
 		k_pos.h = surf->h;
@@ -1129,14 +1129,14 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 
 	for(int i=0;i<3;i++)
 	{
-		surf = TTF_RenderUTF8_Solid(font.copperplate2,t_stat2[i],black);
+		surf = TTF_RenderText_Solid(font.copperplate2,t_stat2[i],0,black);
 		SDL_Texture *stat2=SDL_CreateTextureFromSurface(bild, surf);
 		stat2_pos.w = surf->w;
 		stat2_pos.h = surf->h;
 		SDL_DestroySurface(surf);
 		SDL_RenderTexture(bild, stat2, 0, &stat2_pos);
 		stat2_pos.y+=30;
-		surf = TTF_RenderUTF8_Solid(font.copperplate2,t_rest[i],black);
+		surf = TTF_RenderText_Solid(font.copperplate2,t_rest[i],0,black);
 		SDL_Texture *rest=SDL_CreateTextureFromSurface(bild, surf);
 		rest_pos.w = surf->w;
 		rest_pos.h = surf->h;
@@ -1145,7 +1145,7 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 		rest_pos.y+=30;
 	}
 
-	surf = TTF_RenderUTF8_Solid(font.copperplate2,"<bel. Taste druecken um zurueck zu kehren>",black);
+	surf = TTF_RenderText_Solid(font.copperplate2,"<bel. Taste druecken um zurueck zu kehren>",0,black);
 	SDL_Texture *ende=SDL_CreateTextureFromSurface(bild, surf);
 	ende_pos.w = surf->w;
 	ende_pos.h = surf->h;
@@ -1191,7 +1191,7 @@ void input_name(SDL_Texture *texture, char *t_name)
 		SDL_SetRenderTarget(bild, texture);
 
 		SDL_Surface *surf;
-		surf = TTF_RenderUTF8_Solid(font.copperplate2,"Name: ",black);
+		surf = TTF_RenderText_Solid(font.copperplate2,"Name: ",0,black);
 		SDL_Texture *name=SDL_CreateTextureFromSurface(bild, surf);
 		name_label_pos.w = surf->w;
 		name_label_pos.h = surf->h;
@@ -1199,7 +1199,7 @@ void input_name(SDL_Texture *texture, char *t_name)
 		SDL_RenderTexture(bild, name, 0, &name_label_pos);
 		SDL_RenderTexture(bild, stat_back, &max_name, &max_name);
 
-		surf = TTF_RenderUTF8_Solid(font.marker,t_name,black);
+		surf = TTF_RenderText_Solid(font.marker,t_name,0,black);
 		if(surf!=0) {
 			SDL_Texture *name=SDL_CreateTextureFromSurface(bild, surf);
 			name_pos.w = surf->w;
@@ -1328,7 +1328,7 @@ void hilfe_menue(SDL_Renderer *bild)
 	for(int j=0;j<15;j++)
 	{
 		SDL_Surface *surf;
-		surf=TTF_RenderUTF8_Solid(font.courier,hilfe[j],black);
+		surf=TTF_RenderText_Solid(font.courier,hilfe[j],0,black);
 		if(surf!=0) {
 		SDL_Texture *hilfe_text=SDL_CreateTextureFromSurface(bild, surf);
 		hilfe_pos.w = surf->w;
@@ -1339,7 +1339,7 @@ void hilfe_menue(SDL_Renderer *bild)
 		hilfe_pos.y+=25;
 	}
 	SDL_Surface *surf;
-	surf=TTF_RenderUTF8_Solid(font.courier,"<belibige Taste drücken um zurück zu kehren>",black);
+	surf=TTF_RenderText_Solid(font.courier,"<belibige Taste drücken um zurück zu kehren>",0,black);
 	SDL_Texture *ende_text=SDL_CreateTextureFromSurface(bild, surf);
 	SDL_FRect ende_pos={130,550,surf->w,surf->h};
 	SDL_DestroySurface(surf);
