@@ -76,7 +76,7 @@ SDL_Window *window;
 
 char *user_config_path;
 
-char *data_path;
+const char *data_path;
 
 struct
 {
@@ -182,7 +182,7 @@ void free_resources()
 	TTF_CloseFont(font.marker);
 	TTF_CloseFont(font.courier);
 
-	free(data_path);
+	free((void *)data_path);
 }
 
 void program()
