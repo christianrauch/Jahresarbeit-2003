@@ -300,7 +300,7 @@ void menu(SDL_Renderer *ausgabe_bild, int *field)
 
 		if(menu_event.type==SDL_EVENT_KEY_DOWN)
 		{
-			switch(menu_event.key.keysym.sym)
+			switch(menu_event.key.key)
 			{
 			case SDLK_UP:
 				(*field)--;
@@ -650,7 +650,7 @@ void game(SDL_Renderer *bildschirm)
 		switch(event_m.type)
 		{
 		case SDL_EVENT_KEY_DOWN:
-			if(event_m.key.keysym.sym==SDLK_ESCAPE)
+			if(event_m.key.key==SDLK_ESCAPE)
 				return;
 			break;
 		case SDL_EVENT_MOUSE_BUTTON_UP:
@@ -1218,7 +1218,7 @@ void input_name(SDL_Texture *texture, char *t_name)
 		if(SDL_WaitEvent(&input_event))
 		{
 			if(input_event.key.state==SDL_PRESSED) {
-				taste=input_event.key.keysym.sym;
+				taste=input_event.key.key;
 
 				if((taste>=SDLK_0 && taste<=SDLK_9) || (taste>=SDLK_A && taste<=SDLK_Z)) // || taste==SDLK_SPACE)
 				{
