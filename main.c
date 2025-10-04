@@ -164,13 +164,13 @@ void load_resources()
 
 void free_resources()
 {
-	SDL_FreeSurface(imgs.background);
-	SDL_FreeSurface(imgs.menu_text);
-	SDL_FreeSurface(imgs.menu_back);
-	SDL_FreeSurface(imgs.info_back);
-	SDL_FreeSurface(imgs.piece_set);
-	SDL_FreeSurface(imgs.direction_arrows);
-	SDL_FreeSurface(imgs.stat_back);
+	SDL_DestroySurface(imgs.background);
+	SDL_DestroySurface(imgs.menu_text);
+	SDL_DestroySurface(imgs.menu_back);
+	SDL_DestroySurface(imgs.info_back);
+	SDL_DestroySurface(imgs.piece_set);
+	SDL_DestroySurface(imgs.direction_arrows);
+	SDL_DestroySurface(imgs.stat_back);
 
 	TTF_CloseFont(font.copperplate2);
 	TTF_CloseFont(font.bloody);
@@ -241,16 +241,16 @@ void menu(SDL_Renderer *ausgabe_bild, int *field)
 	SDL_Event menu_event;
 
 	SDL_Surface *surf;
-	surf = SDL_ConvertSurfaceFormat(imgs.background, SDL_PIXELFORMAT_RGB24, 0);
+	surf = SDL_ConvertSurface(imgs.background, SDL_PIXELFORMAT_RGB24, 0);
 	background=SDL_CreateTextureFromSurface(ausgabe_bild, surf);
-	SDL_FreeSurface(surf);
-	surf = SDL_ConvertSurfaceFormat(imgs.menu_text, SDL_PIXELFORMAT_RGB24, 0);
-	SDL_SetColorKey(surf,SDL_TRUE | SDL_RLEACCEL,SDL_MapRGB(surf->format,255,255,255));
+	SDL_DestroySurface(surf);
+	surf = SDL_ConvertSurface(imgs.menu_text, SDL_PIXELFORMAT_RGB24, 0);
+	SDL_SetSurfaceColorKey(surf,true | SDL_RLEACCEL,SDL_MapRGB(surf->format,255,255,255));
 	menu_text=SDL_CreateTextureFromSurface(ausgabe_bild, surf);
-	SDL_FreeSurface(surf);
-	surf = SDL_ConvertSurfaceFormat(imgs.menu_back, SDL_PIXELFORMAT_RGB24, 0);
+	SDL_DestroySurface(surf);
+	surf = SDL_ConvertSurface(imgs.menu_back, SDL_PIXELFORMAT_RGB24, 0);
 	menu_back=SDL_CreateTextureFromSurface(ausgabe_bild, surf);
-	SDL_FreeSurface(surf);
+	SDL_DestroySurface(surf);
 
 
 	SDL_Rect area;
@@ -290,15 +290,15 @@ void menu(SDL_Renderer *ausgabe_bild, int *field)
 				continue;
 		}
 
-		SDL_RenderCopy(ausgabe_bild, background, 0, 0);
-		SDL_RenderCopy(ausgabe_bild, menu_back, &menu_back_pos, &menu_pos);
-		SDL_RenderCopy(ausgabe_bild, menu_back, &area, &ausgabe_area);
-		SDL_RenderCopy(ausgabe_bild, menu_text, 0, 0);
+		SDL_RenderTexture(ausgabe_bild, background, 0, 0);
+		SDL_RenderTexture(ausgabe_bild, menu_back, &menu_back_pos, &menu_pos);
+		SDL_RenderTexture(ausgabe_bild, menu_back, &area, &ausgabe_area);
+		SDL_RenderTexture(ausgabe_bild, menu_text, 0, 0);
 		SDL_RenderPresent(ausgabe_bild);
 
 		SDL_WaitEvent(&menu_event);
 
-		if(menu_event.type==SDL_KEYDOWN)
+		if(menu_event.type==SDL_EVENT_KEY_DOWN)
 		{
 			switch(menu_event.key.keysym.sym)
 			{
@@ -321,7 +321,7 @@ void menu(SDL_Renderer *ausgabe_bild, int *field)
 			case 7: *field=2; break;
 			}
 		}
-		else if(menu_event.type==SDL_WINDOWEVENT && menu_event.window.event == SDL_WINDOWEVENT_CLOSE)
+		else if(menu_event.type==SDL_WINDOWEVENT && menu_event.window.event == SDL_EVENT_WINDOW_CLOSE_REQUESTED)
 		{
 			exit(0);
 		}
@@ -360,46 +360,46 @@ void hs_menue(SDL_Renderer *bild)
 
 	// render into texture
 	int w, h;
-	SDL_GetRendererOutputSize(bild, &w, &h);
+	SDL_GetCurrentRenderOutputSize(bild, &w, &h);
 	SDL_Texture *texture = SDL_CreateTexture(bild, SDL_GetWindowPixelFormat(window), SDL_TEXTUREACCESS_TARGET, w, h);
 	SDL_SetRenderTarget(bild, texture);
 
 	SDL_Surface *surf;
-	surf = SDL_ConvertSurfaceFormat(imgs.info_back, SDL_PIXELFORMAT_RGB24, 0);
+	surf = SDL_ConvertSurface(imgs.info_back, SDL_PIXELFORMAT_RGB24, 0);
 	highscore_back=SDL_CreateTextureFromSurface(bild, surf);
-	SDL_FreeSurface(surf);
+	SDL_DestroySurface(surf);
 
-	SDL_RenderCopy(bild, highscore_back, 0, 0);
+	SDL_RenderTexture(bild, highscore_back, 0, 0);
 
 	surf = TTF_RenderUTF8_Solid(font.bloody,"HIGHSCORE",red);
 	SDL_Texture *highscore_text=SDL_CreateTextureFromSurface(bild, surf);
 	SDL_Rect headline_pos={200,60,surf->w,surf->h};
-	SDL_FreeSurface(surf);
-	SDL_RenderCopy(bild, highscore_text, 0, &headline_pos);
+	SDL_DestroySurface(surf);
+	SDL_RenderTexture(bild, highscore_text, 0, &headline_pos);
 
 	surf = TTF_RenderUTF8_Solid(font.bradley,"Name",black);
 	SDL_Texture *name_text=SDL_CreateTextureFromSurface(bild, surf);
 	SDL_Rect name_pos={120,170,surf->w,surf->h};
-	SDL_FreeSurface(surf);
-	SDL_RenderCopy(bild, name_text, 0, &name_pos);
+	SDL_DestroySurface(surf);
+	SDL_RenderTexture(bild, name_text, 0, &name_pos);
 
 	surf = TTF_RenderUTF8_Solid(font.bradley,"Punkte",black);
 	SDL_Texture *punkte_text=SDL_CreateTextureFromSurface(bild, surf);
 	SDL_Rect punkte_pos={470,170,surf->w,surf->h};
-	SDL_FreeSurface(surf);
-	SDL_RenderCopy(bild, punkte_text, 0, &punkte_pos);
+	SDL_DestroySurface(surf);
+	SDL_RenderTexture(bild, punkte_text, 0, &punkte_pos);
 
 	surf = TTF_RenderUTF8_Solid(font.bradley,"Fläche",black);
 	SDL_Texture *fla_text=SDL_CreateTextureFromSurface(bild, surf);
 	SDL_Rect gr_fla_pos={580,170,surf->w,surf->h};
-	SDL_FreeSurface(surf);
-	SDL_RenderCopy(bild, fla_text, 0, &gr_fla_pos);
+	SDL_DestroySurface(surf);
+	SDL_RenderTexture(bild, fla_text, 0, &gr_fla_pos);
 
 	surf = TTF_RenderUTF8_Solid(font.bradley,"Zeit",black);
 	SDL_Texture *zeit_text=SDL_CreateTextureFromSurface(bild, surf);
 	SDL_Rect zeit_pos={690,170,surf->w,surf->h};
-	SDL_FreeSurface(surf);
-	SDL_RenderCopy(bild, zeit_text, 0, &zeit_pos);
+	SDL_DestroySurface(surf);
+	SDL_RenderTexture(bild, zeit_text, 0, &zeit_pos);
 
 	name_pos.x=100, name_pos.y=200;
 	punkte_pos.x=500, punkte_pos.y=200;
@@ -412,40 +412,40 @@ void hs_menue(SDL_Renderer *bild)
 		SDL_Texture *name_text=SDL_CreateTextureFromSurface(bild, surf);
 		name_pos.w = surf->w;
 		name_pos.h = surf->h;
-		SDL_FreeSurface(surf);
-		SDL_RenderCopy(bild, name_text, 0, &name_pos);
+		SDL_DestroySurface(surf);
+		SDL_RenderTexture(bild, name_text, 0, &name_pos);
 		name_pos.y+=z_abst;
 
 		surf = TTF_RenderUTF8_Solid(font.bradley,punkte[j],black);
 		SDL_Texture *punkte_text=SDL_CreateTextureFromSurface(bild, surf);
 		punkte_pos.w = surf->w;
 		punkte_pos.h = surf->h;
-		SDL_FreeSurface(surf);
-		SDL_RenderCopy(bild, punkte_text, 0, &punkte_pos);
+		SDL_DestroySurface(surf);
+		SDL_RenderTexture(bild, punkte_text, 0, &punkte_pos);
 		punkte_pos.y+=z_abst;
 
 		surf = TTF_RenderUTF8_Solid(font.bradley,gr_fla[j],black);
 		SDL_Texture *gr_fla_text=SDL_CreateTextureFromSurface(bild, surf);
 		gr_fla_pos.w = surf->w;
 		gr_fla_pos.h = surf->h;
-		SDL_FreeSurface(surf);
-		SDL_RenderCopy(bild, gr_fla_text, 0, &gr_fla_pos);
+		SDL_DestroySurface(surf);
+		SDL_RenderTexture(bild, gr_fla_text, 0, &gr_fla_pos);
 		gr_fla_pos.y+=z_abst;
 
 		surf = TTF_RenderUTF8_Solid(font.bradley,zeit[j],black);
 		SDL_Texture *zeit_text=SDL_CreateTextureFromSurface(bild, surf);
 		zeit_pos.w = surf->w;
 		zeit_pos.h = surf->h;
-		SDL_FreeSurface(surf);
-		SDL_RenderCopy(bild, zeit_text, 0, &zeit_pos);
+		SDL_DestroySurface(surf);
+		SDL_RenderTexture(bild, zeit_text, 0, &zeit_pos);
 		zeit_pos.y+=z_abst;
 	}
 
 	surf = TTF_RenderUTF8_Solid(font.copperplate2,"<bel. Taste druecken um zurueck zu kehren>",black);
 	SDL_Texture *ende_text=SDL_CreateTextureFromSurface(bild, surf);
 	SDL_Rect ende_pos={150,550,surf->w,surf->h};
-	SDL_FreeSurface(surf);
-	SDL_RenderCopy(bild, ende_text, 0, &ende_pos);
+	SDL_DestroySurface(surf);
+	SDL_RenderTexture(bild, ende_text, 0, &ende_pos);
 	SDL_RenderPresent(bild);
 
 	// set screen as render target
@@ -456,12 +456,12 @@ void hs_menue(SDL_Renderer *bild)
 	do
 	{
 		// render texture to screen
-		SDL_RenderCopy(bild, texture, NULL, NULL);
+		SDL_RenderTexture(bild, texture, NULL, NULL);
 		SDL_RenderPresent(bild);
 
-		if(highscore_event.type==SDL_WINDOWEVENT && highscore_event.window.event == SDL_WINDOWEVENT_CLOSE)
+		if(highscore_event.type==SDL_WINDOWEVENT && highscore_event.window.event == SDL_EVENT_WINDOW_CLOSE_REQUESTED)
 			exit(0);
-	}while(SDL_WaitEvent(&highscore_event) && highscore_event.type!=SDL_KEYDOWN);
+	}while(SDL_WaitEvent(&highscore_event) && highscore_event.type!=SDL_EVENT_KEY_DOWN);
 
 	SDL_DestroyTexture(highscore_back);
 	SDL_DestroyTexture(highscore_text);
@@ -473,7 +473,7 @@ void hardware_info(SDL_Renderer *bild)
 	SDL_RendererInfo* info = calloc(1, sizeof(SDL_RendererInfo));
 	SDL_SysWMinfo *wm_info = calloc(1, sizeof(SDL_SysWMinfo));;
 	SDL_Color black={0,0,0};
-	about=SDL_ConvertSurfaceFormat(imgs.info_back, SDL_PIXELFORMAT_RGB24, 0);
+	about=SDL_ConvertSurface(imgs.info_back, SDL_PIXELFORMAT_RGB24, 0);
 	char text_hardware[12][100];
 	char t_h2[12][100];
 	SDL_Rect headline_pos={50,25};
@@ -543,19 +543,19 @@ void hardware_info(SDL_Renderer *bild)
 
 	// render into texture
 	int w, h;
-	SDL_GetRendererOutputSize(bild, &w, &h);
+	SDL_GetCurrentRenderOutputSize(bild, &w, &h);
 	SDL_Texture *texture = SDL_CreateTexture(bild, SDL_GetWindowPixelFormat(window), SDL_TEXTUREACCESS_TARGET, w, h);
 	SDL_SetRenderTarget(bild, texture);
 
 	SDL_Texture *about_text=SDL_CreateTextureFromSurface(bild, about);
-	SDL_RenderCopy(bild, about_text, 0, 0);
+	SDL_RenderTexture(bild, about_text, 0, 0);
 	SDL_Surface *surf;
 	surf = TTF_RenderUTF8_Solid(font.arial_bold,"Informationen über Videohardware:",black);
 	SDL_Texture *headline=SDL_CreateTextureFromSurface(bild, surf);
 	headline_pos.w = surf->w;
 	headline_pos.h = surf->h;
-	SDL_FreeSurface(surf);
-	SDL_RenderCopy(bild, headline, 0, &headline_pos);
+	SDL_DestroySurface(surf);
+	SDL_RenderTexture(bild, headline, 0, &headline_pos);
 	for(int j=0;j<12;j++)
 	{
 		surf = TTF_RenderUTF8_Solid(font.arial,text_hardware[j],black);
@@ -563,16 +563,16 @@ void hardware_info(SDL_Renderer *bild)
 			SDL_Texture *text=SDL_CreateTextureFromSurface(bild, surf);
 			text_pos.w = surf->w;
 			text_pos.h = surf->h;
-			SDL_FreeSurface(surf);
-			SDL_RenderCopy(bild, text, 0, &text_pos);
+			SDL_DestroySurface(surf);
+			SDL_RenderTexture(bild, text, 0, &text_pos);
 		}
 		surf = TTF_RenderUTF8_Solid(font.arial,t_h2[j],black);
 		if(surf!=0) {
 			SDL_Texture *t_h2=SDL_CreateTextureFromSurface(bild, surf);
 			t_h2_pos.w = surf->w;
 			t_h2_pos.h = surf->h;
-			SDL_FreeSurface(surf);
-			SDL_RenderCopy(bild, t_h2, 0, &t_h2_pos);
+			SDL_DestroySurface(surf);
+			SDL_RenderTexture(bild, t_h2, 0, &t_h2_pos);
 		}
 		text_pos.y+=30;
 		t_h2_pos.y+=30;
@@ -581,8 +581,8 @@ void hardware_info(SDL_Renderer *bild)
 	SDL_Texture *ende=SDL_CreateTextureFromSurface(bild, surf);
 	ende_pos.w = surf->w;
 	ende_pos.h = surf->h;
-	SDL_FreeSurface(surf);
-	SDL_RenderCopy(bild, ende, 0, &ende_pos);
+	SDL_DestroySurface(surf);
+	SDL_RenderTexture(bild, ende, 0, &ende_pos);
 	SDL_RenderPresent(bild);
 
 	// set screen as render target
@@ -593,17 +593,17 @@ void hardware_info(SDL_Renderer *bild)
 	do
 	{
 		// render texture to screen
-		SDL_RenderCopy(bild, texture, NULL, NULL);
+		SDL_RenderTexture(bild, texture, NULL, NULL);
 		SDL_RenderPresent(bild);
 
-		if(about_event.type==SDL_WINDOWEVENT && about_event.window.event == SDL_WINDOWEVENT_CLOSE)
+		if(about_event.type==SDL_WINDOWEVENT && about_event.window.event == SDL_EVENT_WINDOW_CLOSE_REQUESTED)
 			exit(0);
-	}while(SDL_WaitEvent(&about_event) && about_event.type!=SDL_KEYDOWN);
+	}while(SDL_WaitEvent(&about_event) && about_event.type!=SDL_EVENT_KEY_DOWN);
 
 	free(wm_info);
 	free(info);
 
-	SDL_FreeSurface(about);
+	SDL_DestroySurface(about);
 }
 
 void free_game(SDL_Renderer *bildschirm)
@@ -649,11 +649,11 @@ void game(SDL_Renderer *bildschirm)
 		SDL_WaitEvent(&event_m);
 		switch(event_m.type)
 		{
-		case SDL_KEYDOWN:
+		case SDL_EVENT_KEY_DOWN:
 			if(event_m.key.keysym.sym==SDLK_ESCAPE)
 				return;
 			break;
-		case SDL_MOUSEBUTTONUP:
+		case SDL_EVENT_MOUSE_BUTTON_UP:
 			klicks_ges++;
 
 			if(event_m.button.x>=matrix_pos.x && event_m.button.x<=matrix_pos.w+matrix_pos.x
@@ -696,7 +696,7 @@ void game(SDL_Renderer *bildschirm)
 
 			break;
 		case SDL_WINDOWEVENT:
-			if(event_m.window.event == SDL_WINDOWEVENT_CLOSE)
+			if(event_m.window.event == SDL_EVENT_WINDOW_CLOSE_REQUESTED)
 				exit(0);
 			break;
 		}
@@ -732,14 +732,14 @@ void draw_matrix(int matrix[9][9], SDL_Rect matrix_pos)
 	SDL_Rect piece_ko;
 
 	bildschirm=SDL_GetRenderer(window);
-	hintergrund=SDL_ConvertSurfaceFormat(imgs.background, SDL_PIXELFORMAT_RGB24, 0);
+	hintergrund=SDL_ConvertSurface(imgs.background, SDL_PIXELFORMAT_RGB24, 0);
 	SDL_Texture *hintergrund_txt=SDL_CreateTextureFromSurface(bildschirm, hintergrund);
-	SDL_RenderCopy(bildschirm, hintergrund_txt, 0, 0);
+	SDL_RenderTexture(bildschirm, hintergrund_txt, 0, 0);
 	draw_arrows(matrix_pos);
-	pieces=SDL_ConvertSurfaceFormat(imgs.piece_set, SDL_PIXELFORMAT_RGB24, 0);
-	SDL_SetColorKey(pieces,SDL_TRUE | SDL_RLEACCEL,SDL_MapRGB(pieces->format,255,0,255));
+	pieces=SDL_ConvertSurface(imgs.piece_set, SDL_PIXELFORMAT_RGB24, 0);
+	SDL_SetSurfaceColorKey(pieces,true | SDL_RLEACCEL,SDL_MapRGB(pieces->format,255,0,255));
 	SDL_Texture *pieces_txt=SDL_CreateTextureFromSurface(bildschirm, pieces);
-	SDL_FreeSurface(pieces);
+	SDL_DestroySurface(pieces);
 
 	for(int i=0;i<=8;i++)
 	{
@@ -753,13 +753,13 @@ void draw_matrix(int matrix[9][9], SDL_Rect matrix_pos)
 			piece_ko.w=((matrix[i][j]+1)*50)-piece_ko.x;
 			piece_ko.h=50;
 
-			SDL_RenderCopy(bildschirm, pieces_txt, &piece_ko, &piece_pos);
+			SDL_RenderTexture(bildschirm, pieces_txt, &piece_ko, &piece_pos);
 		}
 	}
 
 	SDL_RenderPresent(bildschirm);
 
-	SDL_FreeSurface(hintergrund);
+	SDL_DestroySurface(hintergrund);
 }
 
 void draw_arrows(SDL_Rect matrix_pos)
@@ -771,8 +771,8 @@ void draw_arrows(SDL_Rect matrix_pos)
 	SDL_Rect pfeil_pos = {.w=50, .h=50};
 
 	bildschirm=SDL_GetRenderer(window);
-	direction_arrows=SDL_ConvertSurfaceFormat(imgs.direction_arrows, SDL_PIXELFORMAT_RGB24, 0);
-	SDL_SetColorKey(direction_arrows,SDL_RLEACCEL | SDL_TRUE,SDL_MapRGB(direction_arrows->format,255,255,255));
+	direction_arrows=SDL_ConvertSurface(imgs.direction_arrows, SDL_PIXELFORMAT_RGB24, 0);
+	SDL_SetSurfaceColorKey(direction_arrows,SDL_RLEACCEL | true,SDL_MapRGB(direction_arrows->format,255,255,255));
 	SDL_Texture *direction_arrows_txt=SDL_CreateTextureFromSurface(bildschirm, direction_arrows);
 
 	pfeil_ko.x=0;
@@ -785,7 +785,7 @@ void draw_arrows(SDL_Rect matrix_pos)
 		pfeil_pos.x=matrix_pos.x+i*50;
 		pfeil_pos.y=matrix_pos.y-50;
 
-		SDL_RenderCopy(bildschirm, direction_arrows_txt, &pfeil_ko, &pfeil_pos);
+		SDL_RenderTexture(bildschirm, direction_arrows_txt, &pfeil_ko, &pfeil_pos);
 	}
 
 	pfeil_ko.x=50;
@@ -798,7 +798,7 @@ void draw_arrows(SDL_Rect matrix_pos)
 		pfeil_pos.x=matrix_pos.x+matrix_pos.w;
 		pfeil_pos.y=matrix_pos.y+j*50;
 
-		SDL_RenderCopy(bildschirm, direction_arrows_txt, &pfeil_ko, &pfeil_pos);
+		SDL_RenderTexture(bildschirm, direction_arrows_txt, &pfeil_ko, &pfeil_pos);
 	}
 
 	pfeil_ko.x=50;
@@ -811,7 +811,7 @@ void draw_arrows(SDL_Rect matrix_pos)
 		pfeil_pos.x=matrix_pos.x+k*50;
 		pfeil_pos.y=matrix_pos.y+matrix_pos.h;
 
-		SDL_RenderCopy(bildschirm, direction_arrows_txt, &pfeil_ko, &pfeil_pos);
+		SDL_RenderTexture(bildschirm, direction_arrows_txt, &pfeil_ko, &pfeil_pos);
 	}
 
 	pfeil_ko.x=0;
@@ -824,10 +824,10 @@ void draw_arrows(SDL_Rect matrix_pos)
 		pfeil_pos.x=matrix_pos.x-50;
 		pfeil_pos.y=matrix_pos.y+l*50;
 
-		SDL_RenderCopy(bildschirm, direction_arrows_txt, &pfeil_ko, &pfeil_pos);
+		SDL_RenderTexture(bildschirm, direction_arrows_txt, &pfeil_ko, &pfeil_pos);
 	}
 
-	SDL_FreeSurface(direction_arrows);
+	SDL_DestroySurface(direction_arrows);
 }
 
 void change_matrix(int matrix[9][9], char *arrows, int nr)
@@ -1042,24 +1042,24 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 
 	// render into texture
 	int w, h;
-	SDL_GetRendererOutputSize(bild, &w, &h);
+	SDL_GetCurrentRenderOutputSize(bild, &w, &h);
 	SDL_Texture *texture = SDL_CreateTexture(bild, SDL_GetWindowPixelFormat(window), SDL_TEXTUREACCESS_TARGET, w, h);
 	SDL_SetRenderTarget(bild, texture);
 
 	SDL_Texture *stat_back_txt=SDL_CreateTextureFromSurface(bild, imgs.stat_back);
-	SDL_RenderCopy(bild, stat_back_txt, 0, 0);
+	SDL_RenderTexture(bild, stat_back_txt, 0, 0);
 
 	SDL_Surface *surf;
 	surf = TTF_RenderUTF8_Solid(font.copperplate,"SPIELENDE",black);
 	SDL_Texture *headline_txt=SDL_CreateTextureFromSurface(bild, surf);
 	headline.w = surf->w;
 	headline.h = surf->h;
-	SDL_FreeSurface(surf);
-	SDL_RenderCopy(bild, headline_txt, 0, &headline);
+	SDL_DestroySurface(surf);
+	SDL_RenderTexture(bild, headline_txt, 0, &headline);
 
 	// render screen
 	SDL_SetRenderTarget(bild, NULL);
-	SDL_RenderCopy(bild, texture, NULL, NULL);
+	SDL_RenderTexture(bild, texture, NULL, NULL);
 	SDL_RenderPresent(bild);
 
 	hs_in.punkte=p;
@@ -1091,21 +1091,21 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 	SDL_Texture *pos_txt=SDL_CreateTextureFromSurface(bild, surf);
 	pos_pos.w = surf->w;
 	pos_pos.h = surf->h;
-	SDL_FreeSurface(surf);
-	SDL_RenderCopy(bild, pos_txt, 0, &pos_pos);
+	SDL_DestroySurface(surf);
+	SDL_RenderTexture(bild, pos_txt, 0, &pos_pos);
 
 	surf = TTF_RenderUTF8_Solid(font.copperplate2,t_zeit,black);
 	SDL_Texture *time_txt=SDL_CreateTextureFromSurface(bild, surf);
 	time_pos.w = surf->w;
 	time_pos.h = surf->h;
-	SDL_FreeSurface(surf);
-	SDL_RenderCopy(bild, time_txt, 0, &time_pos);
+	SDL_DestroySurface(surf);
+	SDL_RenderTexture(bild, time_txt, 0, &time_pos);
 	surf = TTF_RenderUTF8_Solid(font.copperplate2,t_punkte,black);
 	SDL_Texture *punkte=SDL_CreateTextureFromSurface(bild, surf);
 	punkte_pos.w = surf->w;
 	punkte_pos.h = surf->h;
-	SDL_FreeSurface(surf);
-	SDL_RenderCopy(bild, punkte, 0, &punkte_pos);
+	SDL_DestroySurface(surf);
+	SDL_RenderTexture(bild, punkte, 0, &punkte_pos);
 
 	for(int i=0;i<4;i++)
 	{
@@ -1113,16 +1113,16 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 		SDL_Texture *name=SDL_CreateTextureFromSurface(bild, surf);
 		stat1_pos.w = surf->w;
 		stat1_pos.h = surf->h;
-		SDL_FreeSurface(surf);
-		SDL_RenderCopy(bild, name, 0, &stat1_pos);
+		SDL_DestroySurface(surf);
+		SDL_RenderTexture(bild, name, 0, &stat1_pos);
 		stat1_pos.y+=30;
 		if(i==3) continue;
 		surf = TTF_RenderUTF8_Solid(font.copperplate2,t_k[i],black);
 		SDL_Texture *k=SDL_CreateTextureFromSurface(bild, surf);
 		k_pos.w = surf->w;
 		k_pos.h = surf->h;
-		SDL_FreeSurface(surf);
-		SDL_RenderCopy(bild, k, 0, &k_pos);
+		SDL_DestroySurface(surf);
+		SDL_RenderTexture(bild, k, 0, &k_pos);
 		k_pos.y+=30;
 	}
 
@@ -1132,15 +1132,15 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 		SDL_Texture *stat2=SDL_CreateTextureFromSurface(bild, surf);
 		stat2_pos.w = surf->w;
 		stat2_pos.h = surf->h;
-		SDL_FreeSurface(surf);
-		SDL_RenderCopy(bild, stat2, 0, &stat2_pos);
+		SDL_DestroySurface(surf);
+		SDL_RenderTexture(bild, stat2, 0, &stat2_pos);
 		stat2_pos.y+=30;
 		surf = TTF_RenderUTF8_Solid(font.copperplate2,t_rest[i],black);
 		SDL_Texture *rest=SDL_CreateTextureFromSurface(bild, surf);
 		rest_pos.w = surf->w;
 		rest_pos.h = surf->h;
-		SDL_FreeSurface(surf);
-		SDL_RenderCopy(bild, rest, 0, &rest_pos);
+		SDL_DestroySurface(surf);
+		SDL_RenderTexture(bild, rest, 0, &rest_pos);
 		rest_pos.y+=30;
 	}
 
@@ -1148,8 +1148,8 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 	SDL_Texture *ende=SDL_CreateTextureFromSurface(bild, surf);
 	ende_pos.w = surf->w;
 	ende_pos.h = surf->h;
-	SDL_FreeSurface(surf);
-	SDL_RenderCopy(bild, ende, 0, &ende_pos);
+	SDL_DestroySurface(surf);
+	SDL_RenderTexture(bild, ende, 0, &ende_pos);
 	SDL_RenderPresent(bild);
 
 	// set screen as render target
@@ -1158,12 +1158,12 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 	do
 	{
 		// render texture to screen
-		SDL_RenderCopy(bild, texture, NULL, NULL);
+		SDL_RenderTexture(bild, texture, NULL, NULL);
 		SDL_RenderPresent(bild);
 
-		if(stat_event.type==SDL_WINDOWEVENT && stat_event.window.event == SDL_WINDOWEVENT_CLOSE)
+		if(stat_event.type==SDL_WINDOWEVENT && stat_event.window.event == SDL_EVENT_WINDOW_CLOSE_REQUESTED)
 			exit(0);
-	}while(SDL_WaitEvent(&stat_event) && stat_event.type!=SDL_KEYDOWN);
+	}while(SDL_WaitEvent(&stat_event) && stat_event.type!=SDL_EVENT_KEY_DOWN);
 }
 
 void input_name(SDL_Texture *texture, char *t_name)
@@ -1194,9 +1194,9 @@ void input_name(SDL_Texture *texture, char *t_name)
 		SDL_Texture *name=SDL_CreateTextureFromSurface(bild, surf);
 		name_label_pos.w = surf->w;
 		name_label_pos.h = surf->h;
-		SDL_FreeSurface(surf);
-		SDL_RenderCopy(bild, name, 0, &name_label_pos);
-		SDL_RenderCopy(bild, stat_back, &max_name, &max_name);
+		SDL_DestroySurface(surf);
+		SDL_RenderTexture(bild, name, 0, &name_label_pos);
+		SDL_RenderTexture(bild, stat_back, &max_name, &max_name);
 
 		surf = TTF_RenderUTF8_Solid(font.marker,t_name,black);
 		if(surf!=0) {
@@ -1205,13 +1205,13 @@ void input_name(SDL_Texture *texture, char *t_name)
 			name_pos.h = surf->h;
 			if(name_pos.w>max_name.w) max_name.w = name_pos.w;
 			if(name_pos.h>max_name.h) max_name.h = name_pos.h;
-			SDL_FreeSurface(surf);
-			SDL_RenderCopy(bild, name, 0, &name_pos);
+			SDL_DestroySurface(surf);
+			SDL_RenderTexture(bild, name, 0, &name_pos);
 		}
 
 		// render texture to screen
 		SDL_SetRenderTarget(bild, NULL);
-		SDL_RenderCopy(bild, texture, NULL, NULL);
+		SDL_RenderTexture(bild, texture, NULL, NULL);
 		SDL_RenderPresent(bild);
 
 		if(SDL_WaitEvent(&input_event))
@@ -1219,7 +1219,7 @@ void input_name(SDL_Texture *texture, char *t_name)
 			if(input_event.key.state==SDL_PRESSED) {
 				taste=input_event.key.keysym.sym;
 
-				if((taste>=SDLK_0 && taste<=SDLK_9) || (taste>=SDLK_a && taste<=SDLK_z)) // || taste==SDLK_SPACE)
+				if((taste>=SDLK_0 && taste<=SDLK_9) || (taste>=SDLK_A && taste<=SDLK_Z)) // || taste==SDLK_SPACE)
 				{
 					if(taste!=32)
 					{
@@ -1249,7 +1249,7 @@ void input_name(SDL_Texture *texture, char *t_name)
 					taste=0;
 				}
 			}
-			else if(input_event.type==SDL_WINDOWEVENT && input_event.window.event == SDL_WINDOWEVENT_CLOSE)
+			else if(input_event.type==SDL_WINDOWEVENT && input_event.window.event == SDL_EVENT_WINDOW_CLOSE_REQUESTED)
 			{
 				exit(0);
 			}
@@ -1315,12 +1315,12 @@ void hilfe_menue(SDL_Renderer *bild)
 
 	// render into texture
 	int w, h;
-	SDL_GetRendererOutputSize(bild, &w, &h);
+	SDL_GetCurrentRenderOutputSize(bild, &w, &h);
 	SDL_Texture *texture = SDL_CreateTexture(bild, SDL_GetWindowPixelFormat(window), SDL_TEXTUREACCESS_TARGET, w, h);
 	SDL_SetRenderTarget(bild, texture);
 
 	SDL_Texture *hilfe_back=SDL_CreateTextureFromSurface(bild, imgs.info_back);
-	SDL_RenderCopy(bild, hilfe_back, 0, 0);
+	SDL_RenderTexture(bild, hilfe_back, 0, 0);
 
 	SDL_Texture *hilfe_text = SDL_CreateTexture(bild, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, 50, 50);
 
@@ -1332,8 +1332,8 @@ void hilfe_menue(SDL_Renderer *bild)
 		SDL_Texture *hilfe_text=SDL_CreateTextureFromSurface(bild, surf);
 		hilfe_pos.w = surf->w;
 		hilfe_pos.h = surf->h;
-		SDL_FreeSurface(surf);
-		SDL_RenderCopy(bild, hilfe_text, 0, &hilfe_pos);
+		SDL_DestroySurface(surf);
+		SDL_RenderTexture(bild, hilfe_text, 0, &hilfe_pos);
 		}
 		hilfe_pos.y+=25;
 	}
@@ -1341,8 +1341,8 @@ void hilfe_menue(SDL_Renderer *bild)
 	surf=TTF_RenderUTF8_Solid(font.courier,"<belibige Taste drücken um zurück zu kehren>",black);
 	SDL_Texture *ende_text=SDL_CreateTextureFromSurface(bild, surf);
 	SDL_Rect ende_pos={130,550,surf->w,surf->h};
-	SDL_FreeSurface(surf);
-	SDL_RenderCopy(bild, ende_text, 0, &ende_pos);
+	SDL_DestroySurface(surf);
+	SDL_RenderTexture(bild, ende_text, 0, &ende_pos);
 	SDL_RenderPresent(bild);
 
 	// set screen as render target
@@ -1351,12 +1351,12 @@ void hilfe_menue(SDL_Renderer *bild)
 	do
 	{
 		// render texture to screen
-		SDL_RenderCopy(bild, texture, NULL, NULL);
+		SDL_RenderTexture(bild, texture, NULL, NULL);
 		SDL_RenderPresent(bild);
 
-		if(hilfe_event.type==SDL_WINDOWEVENT && hilfe_event.window.event == SDL_WINDOWEVENT_CLOSE)
+		if(hilfe_event.type==SDL_WINDOWEVENT && hilfe_event.window.event == SDL_EVENT_WINDOW_CLOSE_REQUESTED)
 			exit(0);
-	}while(SDL_WaitEvent(&hilfe_event) && hilfe_event.type!=SDL_KEYDOWN);
+	}while(SDL_WaitEvent(&hilfe_event) && hilfe_event.type!=SDL_EVENT_KEY_DOWN);
 
 	SDL_DestroyTexture(hilfe_back);
 	SDL_DestroyTexture(texture);
