@@ -321,7 +321,7 @@ void menu(SDL_Renderer *ausgabe_bild, int *field)
 			case 7: *field=2; break;
 			}
 		}
-		else if(menu_event.type==SDL_WINDOWEVENT && menu_event.window.event == SDL_EVENT_WINDOW_CLOSE_REQUESTED)
+		else if(menu_event.window.event == SDL_EVENT_WINDOW_CLOSE_REQUESTED)
 		{
 			exit(0);
 		}
@@ -459,7 +459,7 @@ void hs_menue(SDL_Renderer *bild)
 		SDL_RenderTexture(bild, texture, NULL, NULL);
 		SDL_RenderPresent(bild);
 
-		if(highscore_event.type==SDL_WINDOWEVENT && highscore_event.window.event == SDL_EVENT_WINDOW_CLOSE_REQUESTED)
+		if(highscore_event.window.event == SDL_EVENT_WINDOW_CLOSE_REQUESTED)
 			exit(0);
 	}while(SDL_WaitEvent(&highscore_event) && highscore_event.type!=SDL_EVENT_KEY_DOWN);
 
@@ -596,7 +596,7 @@ void hardware_info(SDL_Renderer *bild)
 		SDL_RenderTexture(bild, texture, NULL, NULL);
 		SDL_RenderPresent(bild);
 
-		if(about_event.type==SDL_WINDOWEVENT && about_event.window.event == SDL_EVENT_WINDOW_CLOSE_REQUESTED)
+		if(about_event.window.event == SDL_EVENT_WINDOW_CLOSE_REQUESTED)
 			exit(0);
 	}while(SDL_WaitEvent(&about_event) && about_event.type!=SDL_EVENT_KEY_DOWN);
 
@@ -695,9 +695,8 @@ void game(SDL_Renderer *bildschirm)
 			}
 
 			break;
-		case SDL_WINDOWEVENT:
-			if(event_m.window.event == SDL_EVENT_WINDOW_CLOSE_REQUESTED)
-				exit(0);
+		case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
+			exit(0);
 			break;
 		}
 	}
@@ -1163,7 +1162,7 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 		SDL_RenderTexture(bild, texture, NULL, NULL);
 		SDL_RenderPresent(bild);
 
-		if(stat_event.type==SDL_WINDOWEVENT && stat_event.window.event == SDL_EVENT_WINDOW_CLOSE_REQUESTED)
+		if(stat_event.window.event == SDL_EVENT_WINDOW_CLOSE_REQUESTED)
 			exit(0);
 	}while(SDL_WaitEvent(&stat_event) && stat_event.type!=SDL_EVENT_KEY_DOWN);
 }
@@ -1251,7 +1250,7 @@ void input_name(SDL_Texture *texture, char *t_name)
 					taste=0;
 				}
 			}
-			else if(input_event.type==SDL_WINDOWEVENT && input_event.window.event == SDL_EVENT_WINDOW_CLOSE_REQUESTED)
+			else if(input_event.window.event == SDL_EVENT_WINDOW_CLOSE_REQUESTED)
 			{
 				exit(0);
 			}
@@ -1356,7 +1355,7 @@ void hilfe_menue(SDL_Renderer *bild)
 		SDL_RenderTexture(bild, texture, NULL, NULL);
 		SDL_RenderPresent(bild);
 
-		if(hilfe_event.type==SDL_WINDOWEVENT && hilfe_event.window.event == SDL_EVENT_WINDOW_CLOSE_REQUESTED)
+		if(hilfe_event.window.event == SDL_EVENT_WINDOW_CLOSE_REQUESTED)
 			exit(0);
 	}while(SDL_WaitEvent(&hilfe_event) && hilfe_event.type!=SDL_EVENT_KEY_DOWN);
 
