@@ -22,6 +22,8 @@ MA 02111-1307, USA.
 #include <SDL_syswm.h>
 #include <time.h>
 #include <sys/stat.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 typedef struct
 {
