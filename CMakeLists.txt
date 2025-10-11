@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 project(Jahresarbeit-2003)
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
-
 option(ASAN "build with AddressSanitizer")
 
 if (ASAN)
