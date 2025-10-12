@@ -414,6 +414,7 @@ void hs_menue(SDL_Renderer *bild)
 		SDL_DestroySurface(surf);
 		SDL_RenderTexture(bild, name_text, 0, &name_pos);
 		name_pos.y+=z_abst;
+		SDL_DestroyTexture(name_text);
 
 		surf = TTF_RenderText_Solid(font.bradley,punkte[j],0,black);
 		SDL_Texture *punkte_text=SDL_CreateTextureFromSurface(bild, surf);
@@ -422,6 +423,7 @@ void hs_menue(SDL_Renderer *bild)
 		SDL_DestroySurface(surf);
 		SDL_RenderTexture(bild, punkte_text, 0, &punkte_pos);
 		punkte_pos.y+=z_abst;
+		SDL_DestroyTexture(punkte_text);
 
 		surf = TTF_RenderText_Solid(font.bradley,gr_fla[j],0,black);
 		SDL_Texture *gr_fla_text=SDL_CreateTextureFromSurface(bild, surf);
@@ -430,6 +432,7 @@ void hs_menue(SDL_Renderer *bild)
 		SDL_DestroySurface(surf);
 		SDL_RenderTexture(bild, gr_fla_text, 0, &gr_fla_pos);
 		gr_fla_pos.y+=z_abst;
+		SDL_DestroyTexture(gr_fla_text);
 
 		surf = TTF_RenderText_Solid(font.bradley,zeit[j],0,black);
 		SDL_Texture *zeit_text=SDL_CreateTextureFromSurface(bild, surf);
@@ -438,6 +441,7 @@ void hs_menue(SDL_Renderer *bild)
 		SDL_DestroySurface(surf);
 		SDL_RenderTexture(bild, zeit_text, 0, &zeit_pos);
 		zeit_pos.y+=z_abst;
+		SDL_DestroyTexture(zeit_text);
 	}
 
 	surf = TTF_RenderText_Solid(font.copperplate2,"<bel. Taste druecken um zurueck zu kehren>",0,black);
@@ -446,6 +450,7 @@ void hs_menue(SDL_Renderer *bild)
 	SDL_DestroySurface(surf);
 	SDL_RenderTexture(bild, ende_text, 0, &ende_pos);
 	SDL_RenderPresent(bild);
+	SDL_DestroyTexture(ende_text);
 
 	// set screen as render target
 	SDL_SetRenderTarget(bild, NULL);
@@ -462,8 +467,13 @@ void hs_menue(SDL_Renderer *bild)
 			exit(0);
 	}while(SDL_WaitEvent(&highscore_event) && highscore_event.type!=SDL_EVENT_KEY_DOWN);
 
+	SDL_DestroyTexture(texture);
 	SDL_DestroyTexture(highscore_back);
 	SDL_DestroyTexture(highscore_text);
+	SDL_DestroyTexture(name_text);
+	SDL_DestroyTexture(punkte_text);
+	SDL_DestroyTexture(fla_text);
+	SDL_DestroyTexture(zeit_text);
 }
 
 void hardware_info(SDL_Renderer *bild)
@@ -529,9 +539,11 @@ void hardware_info(SDL_Renderer *bild)
 	SDL_GetCurrentRenderOutputSize(bild, &w, &h);
 	SDL_Texture *texture = SDL_CreateTexture(bild, SDL_GetWindowPixelFormat(window), SDL_TEXTUREACCESS_TARGET, w, h);
 	SDL_SetRenderTarget(bild, texture);
+	SDL_DestroyTexture(texture);
 
 	SDL_Texture *about_text=SDL_CreateTextureFromSurface(bild, about);
 	SDL_RenderTexture(bild, about_text, 0, 0);
+	SDL_DestroyTexture(about_text);
 	SDL_Surface *surf;
 	surf = TTF_RenderText_Solid(font.arial_bold,"Informationen über Videohardware:",0,black);
 	SDL_Texture *headline=SDL_CreateTextureFromSurface(bild, surf);
@@ -539,6 +551,7 @@ void hardware_info(SDL_Renderer *bild)
 	headline_pos.h = surf->h;
 	SDL_DestroySurface(surf);
 	SDL_RenderTexture(bild, headline, 0, &headline_pos);
+	SDL_DestroyTexture(headline);
 	for(int j=0;j<12;j++)
 	{
 		surf = TTF_RenderText_Solid(font.arial,text_hardware[j],0,black);
@@ -548,6 +561,7 @@ void hardware_info(SDL_Renderer *bild)
 			text_pos.h = surf->h;
 			SDL_DestroySurface(surf);
 			SDL_RenderTexture(bild, text, 0, &text_pos);
+			SDL_DestroyTexture(text);
 		}
 		surf = TTF_RenderText_Solid(font.arial,t_h2[j],0,black);
 		if(surf!=0) {
@@ -556,6 +570,7 @@ void hardware_info(SDL_Renderer *bild)
 			t_h2_pos.h = surf->h;
 			SDL_DestroySurface(surf);
 			SDL_RenderTexture(bild, t_h2, 0, &t_h2_pos);
+			SDL_DestroyTexture(t_h2);
 		}
 		text_pos.y+=30;
 		t_h2_pos.y+=30;
@@ -567,6 +582,7 @@ void hardware_info(SDL_Renderer *bild)
 	SDL_DestroySurface(surf);
 	SDL_RenderTexture(bild, ende, 0, &ende_pos);
 	SDL_RenderPresent(bild);
+	SDL_DestroyTexture(ende);
 
 	// set screen as render target
 	SDL_SetRenderTarget(bild, NULL);
@@ -737,6 +753,9 @@ void draw_matrix(int matrix[9][9], SDL_Rect matrix_pos)
 		}
 	}
 
+	SDL_DestroyTexture(hintergrund_txt);
+	SDL_DestroyTexture(pieces_txt);
+
 	SDL_RenderPresent(bildschirm);
 
 	SDL_DestroySurface(hintergrund);
@@ -808,6 +827,7 @@ void draw_arrows(SDL_Rect matrix_pos)
 		SDL_RenderTexture(bildschirm, direction_arrows_txt, &pfeil_ko, &pfeil_pos);
 	}
 
+	SDL_DestroyTexture(direction_arrows_txt);
 	SDL_DestroySurface(direction_arrows);
 }
 
@@ -1074,6 +1094,7 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 	pos_pos.h = surf->h;
 	SDL_DestroySurface(surf);
 	SDL_RenderTexture(bild, pos_txt, 0, &pos_pos);
+	SDL_DestroyTexture(pos_txt);
 
 	surf = TTF_RenderText_Solid(font.copperplate2,t_zeit,0,black);
 	SDL_Texture *time_txt=SDL_CreateTextureFromSurface(bild, surf);
@@ -1081,12 +1102,14 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 	time_pos.h = surf->h;
 	SDL_DestroySurface(surf);
 	SDL_RenderTexture(bild, time_txt, 0, &time_pos);
+	SDL_DestroyTexture(time_txt);
 	surf = TTF_RenderText_Solid(font.copperplate2,t_punkte,0,black);
 	SDL_Texture *punkte=SDL_CreateTextureFromSurface(bild, surf);
 	punkte_pos.w = surf->w;
 	punkte_pos.h = surf->h;
 	SDL_DestroySurface(surf);
 	SDL_RenderTexture(bild, punkte, 0, &punkte_pos);
+	SDL_DestroyTexture(punkte);
 
 	for(int i=0;i<4;i++)
 	{
@@ -1097,6 +1120,7 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 		SDL_DestroySurface(surf);
 		SDL_RenderTexture(bild, name, 0, &stat1_pos);
 		stat1_pos.y+=30;
+		SDL_DestroyTexture(name);
 		if(i==3) continue;
 		surf = TTF_RenderText_Solid(font.copperplate2,t_k[i],0,black);
 		SDL_Texture *k=SDL_CreateTextureFromSurface(bild, surf);
@@ -1105,6 +1129,7 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 		SDL_DestroySurface(surf);
 		SDL_RenderTexture(bild, k, 0, &k_pos);
 		k_pos.y+=30;
+		SDL_DestroyTexture(k);
 	}
 
 	for(int i=0;i<3;i++)
@@ -1116,6 +1141,7 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 		SDL_DestroySurface(surf);
 		SDL_RenderTexture(bild, stat2, 0, &stat2_pos);
 		stat2_pos.y+=30;
+		SDL_DestroyTexture(stat2);
 		surf = TTF_RenderText_Solid(font.copperplate2,t_rest[i],0,black);
 		SDL_Texture *rest=SDL_CreateTextureFromSurface(bild, surf);
 		rest_pos.w = surf->w;
@@ -1123,6 +1149,7 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 		SDL_DestroySurface(surf);
 		SDL_RenderTexture(bild, rest, 0, &rest_pos);
 		rest_pos.y+=30;
+		SDL_DestroyTexture(rest);
 	}
 
 	surf = TTF_RenderText_Solid(font.copperplate2,"<bel. Taste druecken um zurueck zu kehren>",0,black);
@@ -1132,6 +1159,7 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 	SDL_DestroySurface(surf);
 	SDL_RenderTexture(bild, ende, 0, &ende_pos);
 	SDL_RenderPresent(bild);
+	SDL_DestroyTexture(ende);
 
 	// set screen as render target
 	SDL_SetRenderTarget(bild, NULL);
@@ -1145,6 +1173,10 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 		if(stat_event.window.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED)
 			exit(0);
 	}while(SDL_WaitEvent(&stat_event) && stat_event.type!=SDL_EVENT_KEY_DOWN);
+
+	SDL_DestroyTexture(texture);
+	SDL_DestroyTexture(stat_back_txt);
+	SDL_DestroyTexture(headline_txt);
 }
 
 void input_name(SDL_Texture *texture, char *t_name)
@@ -1178,6 +1210,7 @@ void input_name(SDL_Texture *texture, char *t_name)
 		SDL_DestroySurface(surf);
 		SDL_RenderTexture(bild, name, 0, &name_label_pos);
 		SDL_RenderTexture(bild, stat_back, &max_name, &max_name);
+		SDL_DestroyTexture(name);
 
 		surf = TTF_RenderText_Solid(font.marker,t_name,0,black);
 		if(surf!=0) {
@@ -1188,6 +1221,7 @@ void input_name(SDL_Texture *texture, char *t_name)
 			if(name_pos.h>max_name.h) max_name.h = name_pos.h;
 			SDL_DestroySurface(surf);
 			SDL_RenderTexture(bild, name, 0, &name_pos);
+			SDL_DestroyTexture(name);
 		}
 
 		// render texture to screen
@@ -1236,6 +1270,8 @@ void input_name(SDL_Texture *texture, char *t_name)
 			}
 		}
 	}while(!(taste==SDLK_RETURN && t_name[0]!='\0'));
+
+	SDL_DestroyTexture(stat_back);
 }
 
 void write_hs(hs *hs_out)
@@ -1315,6 +1351,7 @@ void hilfe_menue(SDL_Renderer *bild)
 		hilfe_pos.h = surf->h;
 		SDL_DestroySurface(surf);
 		SDL_RenderTexture(bild, hilfe_text, 0, &hilfe_pos);
+		SDL_DestroyTexture(hilfe_text);
 		}
 		hilfe_pos.y+=25;
 	}
@@ -1341,6 +1378,8 @@ void hilfe_menue(SDL_Renderer *bild)
 
 	SDL_DestroyTexture(hilfe_back);
 	SDL_DestroyTexture(texture);
+	SDL_DestroyTexture(hilfe_text);
+	SDL_DestroyTexture(ende_text);
 }
 
 void in_hs(hs hs_input)
