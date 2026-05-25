@@ -530,8 +530,8 @@ void hardware_info(SDL_Renderer *bild)
 	strcpy(t_h2[6],(SDL_GetNumberProperty(properties, SDL_PROP_RENDERER_VSYNC_NUMBER, 0) > 0) ? "Ja" : "Nein");
 	strcpy(t_h2[7],"Ja");
 	sprintf(t_h2[8],"%d",num_texture_formats);
-	sprintf(t_h2[9],"%d",SDL_GetNumberProperty(properties, SDL_PROP_RENDERER_MAX_TEXTURE_SIZE_NUMBER, 0));
-	sprintf(t_h2[10],"%d",SDL_GetNumberProperty(properties, SDL_PROP_RENDERER_MAX_TEXTURE_SIZE_NUMBER, 0));
+	sprintf(t_h2[9],"%ld",SDL_GetNumberProperty(properties, SDL_PROP_RENDERER_MAX_TEXTURE_SIZE_NUMBER, 0));
+	sprintf(t_h2[10],"%ld",SDL_GetNumberProperty(properties, SDL_PROP_RENDERER_MAX_TEXTURE_SIZE_NUMBER, 0));
 	sprintf(t_h2[11],"%d",SDL_GetSystemRAM());
 
 	// render into texture
