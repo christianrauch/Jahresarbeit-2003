@@ -454,7 +454,7 @@ void hs_menue(SDL_Renderer *bild)
 
 	SDL_Event highscore_event;
 
-	do
+	while(SDL_WaitEvent(&highscore_event) && highscore_event.type!=SDL_EVENT_KEY_DOWN)
 	{
 		// render texture to screen
 		SDL_RenderTexture(bild, texture, NULL, NULL);
@@ -462,7 +462,7 @@ void hs_menue(SDL_Renderer *bild)
 
 		if(highscore_event.window.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED)
 			exit(0);
-	}while(SDL_WaitEvent(&highscore_event) && highscore_event.type!=SDL_EVENT_KEY_DOWN);
+	}
 
 	SDL_DestroyTexture(texture);
 	SDL_DestroyTexture(highscore_back);
@@ -585,7 +585,7 @@ void hardware_info(SDL_Renderer *bild)
 
 	SDL_Event about_event;
 
-	do
+	while(SDL_WaitEvent(&about_event) && about_event.type!=SDL_EVENT_KEY_DOWN)
 	{
 		// render texture to screen
 		SDL_RenderTexture(bild, texture, NULL, NULL);
@@ -593,7 +593,7 @@ void hardware_info(SDL_Renderer *bild)
 
 		if(about_event.window.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED)
 			exit(0);
-	}while(SDL_WaitEvent(&about_event) && about_event.type!=SDL_EVENT_KEY_DOWN);
+	}
 
 	SDL_DestroySurface(about);
 	SDL_DestroyTexture(texture);
@@ -1161,15 +1161,15 @@ void stat_menue(int time, int time2, int k_ges, int k_fla, int k_pfe, int max_an
 	// set screen as render target
 	SDL_SetRenderTarget(bild, NULL);
 
-	do
-	{
 		// render texture to screen
 		SDL_RenderTexture(bild, texture, NULL, NULL);
 		SDL_RenderPresent(bild);
 
+	while(SDL_WaitEvent(&stat_event) && stat_event.type!=SDL_EVENT_KEY_DOWN)
+	{
 		if(stat_event.window.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED)
 			exit(0);
-	}while(SDL_WaitEvent(&stat_event) && stat_event.type!=SDL_EVENT_KEY_DOWN);
+	}
 
 	SDL_DestroyTexture(texture);
 	SDL_DestroyTexture(stat_back_txt);
@@ -1365,15 +1365,15 @@ void hilfe_menue(SDL_Renderer *bild)
 	// set screen as render target
 	SDL_SetRenderTarget(bild, NULL);
 
-	do
-	{
 		// render texture to screen
 		SDL_RenderTexture(bild, texture, NULL, NULL);
 		SDL_RenderPresent(bild);
 
+	while(SDL_WaitEvent(&hilfe_event) && hilfe_event.type!=SDL_EVENT_KEY_DOWN)
+	{
 		if(hilfe_event.window.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED)
 			exit(0);
-	}while(SDL_WaitEvent(&hilfe_event) && hilfe_event.type!=SDL_EVENT_KEY_DOWN);
+	}
 
 	SDL_DestroyTexture(hilfe_back);
 	SDL_DestroyTexture(texture);
