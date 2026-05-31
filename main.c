@@ -536,7 +536,6 @@ void hardware_info(SDL_Renderer *bild)
 	SDL_GetCurrentRenderOutputSize(bild, &w, &h);
 	SDL_Texture *texture = SDL_CreateTexture(bild, SDL_GetWindowPixelFormat(window), SDL_TEXTUREACCESS_TARGET, w, h);
 	SDL_SetRenderTarget(bild, texture);
-	SDL_DestroyTexture(texture);
 
 	SDL_Texture *about_text=SDL_CreateTextureFromSurface(bild, about);
 	SDL_RenderTexture(bild, about_text, 0, 0);
@@ -597,6 +596,7 @@ void hardware_info(SDL_Renderer *bild)
 	}while(SDL_WaitEvent(&about_event) && about_event.type!=SDL_EVENT_KEY_DOWN);
 
 	SDL_DestroySurface(about);
+	SDL_DestroyTexture(texture);
 }
 
 void free_game(SDL_Renderer *bildschirm)
