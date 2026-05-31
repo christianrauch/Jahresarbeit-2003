@@ -75,8 +75,6 @@ SDL_Window *window;
 
 char *user_config_path;
 
-const char *data_path;
-
 struct
 {
 	SDL_Surface *background;
@@ -105,9 +103,10 @@ char hilfe[20][200];
 
 void load_resources()
 {
+	const char *data_path = SDL_GetBasePath();
+
 	setting game_s;
 
-	data_path = SDL_GetBasePath();
 	game_s=game_setting();
 
 	char path[4096];
@@ -180,8 +179,6 @@ void free_resources()
 	TTF_CloseFont(font.copperplate);
 	TTF_CloseFont(font.marker);
 	TTF_CloseFont(font.courier);
-
-	free((void *)data_path);
 }
 
 void program()
@@ -1295,6 +1292,8 @@ void write_hs(hs *hs_out)
 
 void read_hs(hs *hs_in)
 {
+	const char *data_path = SDL_GetBasePath();
+
 	FILE *fp;
 
 	char fullpath[200];
