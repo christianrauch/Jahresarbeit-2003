@@ -618,7 +618,7 @@ setting game_setting()
 void game(SDL_Renderer *bildschirm)
 {
 	int matrix[9][9];
-	long time1, time2, time_dif, time_gr2=0, time_gre;
+	time_t time1, time2, time_dif, time_gr2=0, time_gre;
 	int gr_anzahl=0, akt_anzahl=0;
 	int klicks_ges=0, klicks_fl=0, klicks_pf=0;
 
